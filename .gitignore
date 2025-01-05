@@ -1,1 +1,5 @@
 dist/
+# Ignore javascript source dependency files
+node_modules
+# Ignore built javascript files, artifacts of `npm run build` (see package.json & vite.config.js)
+src/django_filtering_ui/static/django-filtering-ui

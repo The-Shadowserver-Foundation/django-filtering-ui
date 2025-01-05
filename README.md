@@ -50,8 +50,8 @@ Note, I'm testing within a docker container, because I never run anything locall
 There are two containers, one for each language; Python for the backend and Node for the frontend.
 For the moment the containers is simply run with:
 
-    docker run --rm --name django-filtering-ui--frontend --workdir /code -v $PWD:/code -d node:latest sleep infinity
-    docker run --rm --name django-filtering-ui--backend --workdir /code -v $PWD:/code -d python:3.12 sleep infinity
+    docker run -d --rm --name django-filtering-ui--frontend --workdir /code -v $PWD:/code -p 5173:5173 node:latest sleep infinity
+    docker run -d --rm --name django-filtering-ui--backend --workdir /code -v $PWD:/code python:3.12 sleep infinity
 
 Then I execute commands on the shell within it:
 
@@ -61,6 +61,17 @@ From here you can install and run the frontend code tests using:
 
     npm install
     npm run test
+
+## Building for release
+
+<!-- TODO: Investigate hatchling build hooks to build js src during py pkg build. -->
+
+At this time the package is built as follows:
+
+    # Builds the js source and outputs it into src/django_filtering_ui/static
+    npm run build
+    # Build the python package files
+    hatchling build
 
 ## License
 

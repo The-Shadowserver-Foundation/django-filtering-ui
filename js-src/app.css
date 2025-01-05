@@ -1,0 +1,12 @@
+:root {
+    --ssf-primary-light: #fff;
+    --ssf-primary-dark: #000;
+    --ssf-primary: var(--ssf-primary-light);
+    --ssf-primary-inverse: var(--ssf-primary-dark);
+    --ssf-secondary: #ffc20e;
+    --ssf-secondary-shaded: rgba(255, 194, 14, 0.4);
+    --ssf-tertiary: #e07e26;
+    --ssf-tertiary-shaded: rgba(224, 126, 39, 0.2);
+    --ssf-shaded: #494948;
+    --ssf-shaded-more: #acacac;
+}
