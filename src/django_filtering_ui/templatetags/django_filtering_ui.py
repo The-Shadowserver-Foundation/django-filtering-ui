@@ -1,3 +1,4 @@
+from typing import Any
 from urllib.parse import urljoin
 
 from django import template
@@ -32,4 +33,23 @@ def entrypoint(name: str) -> SafeString:
         uri = static(f"django-filtering-ui/{name}")
     return mark_safe(
         f'<script type="module" src="{uri}"{opts}></script>'
+    )
+
+
+@register.simple_tag()
+def vue_provide(key: str, value: Any, quote: bool = True) -> SafeString:
+    """
+    Writes a ``<script>`` tag with javascript that will be picked up by the
+    ``vue-plugin-django-utils`` VueJS plugin package on the frontend.
+    The provided key and value is essentially like calling VueJS'
+    ``provide(key, value)`` function.
+
+    The key value pair can be used in VueJS with ``inject('key-name')``.
+
+    Be sure to set ``quote=False`` if supplying JSON encoded data.
+    """
+    q = '"' if quote else ''
+    return mark_safe(
+        "<script>window.vueProvided = window.vueProvided || "
+        f'{{}}; vueProvided["{key}"] = {q}{value}{q};</script>'
     )
