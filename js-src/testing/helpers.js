@@ -7,7 +7,7 @@ export const exampleSchemaOne = {
     name: {
       type: "field",
       field_type: "string",
-      lookups: ["iexact"],
+      lookups: ["iexact", "icontains"],
       label: "Name",
     },
     description: {

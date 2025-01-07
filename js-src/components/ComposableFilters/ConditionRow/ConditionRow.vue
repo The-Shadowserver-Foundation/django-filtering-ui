@@ -1,5 +1,5 @@
 <script setup>
-import { computed, defineProps } from "vue";
+import { computed, defineProps, watch } from "vue";
 import Button from "@/components/form/Button.vue";
 import Select from "@/components/form/Select.vue";
 import { lookupToLabel } from "@/utils/lookupMapping";
@@ -21,17 +21,24 @@ const identifierOptions = computed(() => {
     };
   });
 });
-const onChangeIdentifier = (event) => {
-  condition.identifier = event.target.value;
-  if (
-    !condition.relative ||
-    (schemaField.value &&
-      !schemaField.value.lookups.includes(condition.relative))
-  ) {
-    // Apply a default value to the relative property
-    condition.relative = schemaField.value.lookups[0];
-  }
-};
+watch(
+  () => condition.identifier,
+  (identifier) => {
+    // Apply default relative value...
+    // when one isn't present
+    // or when previous relative isn't available
+    if (
+      !condition.relative ||
+      (schemaField.value &&
+        !schemaField.value.lookups.includes(condition.relative))
+    ) {
+      // Apply a default value to the relative property
+      condition.relative = schemaField.value.lookups[0];
+      // Reset the value
+      condition.value = null;
+    }
+  },
+);
 
 // --- Relative ---
 let relativeOptions = computed(() => {
@@ -48,19 +55,14 @@ let relativeOptions = computed(() => {
 <template>
   <div class="row">
     <div class="col">
-      <Select
-        :options="identifierOptions"
-        :selected="condition.identifier"
-        @change="onChangeIdentifier"
-      />
+      <Select :options="identifierOptions" v-model="condition.identifier" />
     </div>
     <div class="col">
       <Select
         :options="relativeOptions"
-        :selected="condition.relative"
         :includeBlank="false"
         :disabled="!condition.identifier"
-        @change="condition.relative = $event.target.value"
+        v-model="condition.relative"
       />
     </div>
     <div class="col">

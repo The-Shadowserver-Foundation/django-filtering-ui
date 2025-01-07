@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps } from "vue";
+import { defineModel, defineProps } from "vue";
 
 // interface Option {
 //   value: string;
@@ -8,22 +8,21 @@ import { defineProps } from "vue";
 //   disabled: boolean = false;
 // }
 
-const { options, selected, includeBlank } = defineProps({
+const model = defineModel({ required: true });
+const { options, includeBlank } = defineProps({
   options: {},
-  selected: "",
   includeBlank: { default: true },
 });
 </script>
 
 <template>
-  <select>
+  <select v-model="model">
     <option v-if="includeBlank" value=""></option>
     <option
       v-for="opt in options"
       :key="opt.value"
       :value="opt.value"
-      :selected="opt.value === selected"
-      :disabled="opt.disabled && opt.value !== selected"
+      :disabled="opt.disabled"
     >
       {{ opt.label }}
     </option>

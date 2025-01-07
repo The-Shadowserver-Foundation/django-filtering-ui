@@ -14,6 +14,7 @@ describe("testing ConditionRow", () => {
       }),
     );
   });
+
   test("renders condition", (context) => {
     const [identifier, relative, value] = ["name", "iexact", "foo"];
     const condition = new Condition(identifier, relative, value);
@@ -32,6 +33,7 @@ describe("testing ConditionRow", () => {
     const valueInput = wrapper.get(".col:nth-of-type(3) input");
     expect(valueInput.element.value).toBe(value);
   });
+
   test("remove button emits 'remove' event", (context) => {
     const condition = new Condition();
     const schema = context.schema;
@@ -43,7 +45,12 @@ describe("testing ConditionRow", () => {
     wrapper.get(".actions .btn-delete").trigger("click");
     expect(wrapper.emitted()).toHaveProperty("remove");
   });
-  test("identifier selection maps corresponding relative options", async (context) => {
+
+  test("identifier selection sets corresponding relative value", async (context) => {
+    // When the user select the identifier (e.g. Name field),
+    // the corresponding relative (e.g. icontains, iexact, etc. lookups)
+    // is set to the default first value
+    // or is left the same if the changed from identifier has the same relative value available.
     const condition = new Condition();
     const schema = context.schema;
     const wrapper = mount(ConditionRow, {
@@ -63,33 +70,42 @@ describe("testing ConditionRow", () => {
     expect(valueInput.element.value).toBe("");
     expect(valueInput.isDisabled()).toBe(true);
 
-    // Create a function to check the relative options
-    // based on the selected identifier.
-    const setAndExpectOptionsToEqualSchema = async (identifierValue) => {
-      // Set the identifier.
-      await identifierSelect.setValue(identifierValue);
-      // Check for non-disabled relative and value inputs.
-      const isDisabled = identifierValue === "";
-      expect(relativeSelect.isDisabled()).toBe(isDisabled);
-      expect(valueInput.isDisabled()).toBe(isDisabled);
+    let currentIdentifier;
 
-      if (identifierValue) {
-        // Check for valid relative options
-        expect(
-          relativeSelect.findAll("option").map((x) => x.element.value),
-        ).toEqual(
-          expect.arrayContaining(
-            context.completeSchema.filters[identifierValue].lookups,
-          ),
-        );
-      }
-    };
+    // 1) Set the identifier to "description".
+    currentIdentifier = "description";
+    await identifierSelect.setValue(currentIdentifier);
+    // Check relative defaults to first available option
+    expect(relativeSelect.element.value).toBe(
+      context.completeSchema.filters[currentIdentifier].lookups[0],
+    );
+    await relativeSelect.setValue("istartswith");
+    await valueInput.setValue("testing startswith");
 
-    await setAndExpectOptionsToEqualSchema("description");
-    await setAndExpectOptionsToEqualSchema("name");
-    // Lastly check unassignment of the identifier disables other input
-    await setAndExpectOptionsToEqualSchema("");
+    // 2) Set the identifier to "name".
+    currentIdentifier = "name";
+    await identifierSelect.setValue(currentIdentifier);
+    // Expect the relative to default to first available option and value
+    // to be reset, because the previous relative is no longer an available option
+    expect(relativeSelect.element.value).toBe(
+      context.completeSchema.filters[currentIdentifier].lookups[0],
+    );
+    expect(valueInput.element.value).toBe("");
+
+    // 2.a) Set the relative to `icontains`,
+    // which is shared between 'name' and 'description' fields.
+    await relativeSelect.setValue("icontains");
+    await valueInput.setValue("testing contains");
+
+    // 3) Set the identifier back to 'description'.
+    currentIdentifier = "description";
+    await identifierSelect.setValue(currentIdentifier);
+    // Expect the relative and value to remain,
+    // because the relative is available for both 'name' and 'description' identifiers.
+    expect(relativeSelect.element.value).toBe("icontains");
+    expect(valueInput.element.value).toBe("testing contains");
   });
+
   test.todo(
     "boolean field-type renders true or false value selection",
     () => {},

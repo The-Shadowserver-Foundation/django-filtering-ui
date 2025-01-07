@@ -98,10 +98,9 @@ const submitHandler = async (e) => {
           Match
           <Select
             id="top-level-operator"
+            v-model="queryFilters.operation"
             :options="matchOptions"
-            :selected="queryFilters.operation"
             :includeBlank="false"
-            @change="queryFilters.operation = $event.target.value"
           />
           the following criteria...
         </div>
