@@ -1,7 +1,7 @@
 import { mount } from "@vue/test-utils";
 import { Condition } from "@/utils/query";
 
-import { exampleSchemaOne } from "@/testing/helpers";
+import { exampleSchemaOne } from "@/testing/data";
 import ConditionRow from "./ConditionRow.vue";
 
 describe("testing ConditionRow", () => {
