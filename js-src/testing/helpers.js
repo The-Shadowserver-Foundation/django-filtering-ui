@@ -40,7 +40,8 @@ export function mountTargetFactory(component, predefinedOptions) {
   // And then use it within the test like:
   //   const wrapper = context.mount();
   return (options) => {
-    const o = { ...predefinedOptions, ...options };
-    return mount(component, merge(defaultComponentMountOptions, o));
+    const o = { ...defaultComponentMountOptions };
+    merge(o, predefinedOptions, options);
+    return mount(component, o);
   };
 }
