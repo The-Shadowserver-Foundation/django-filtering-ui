@@ -40,13 +40,6 @@ const updateSchemaItem = (schemaItem) => {
   };
 };
 
-// Filter down the schema to a subset of schema items for available use.
-// Essentially don't allow the operators to be used.
-// Eventually we'll allow operators be to used.
-const availableSchema = computed(() =>
-  Object.entries(filterSchema.filters).map(([k, v]) => ({ name: k, ...v })),
-);
-
 // Computes the query into the end result for form submission.
 const renderedQueryFilters = computed(() =>
   JSON.stringify(queryFilters.toObject()),
@@ -110,7 +103,7 @@ const submitHandler = async (e) => {
         v-for="condition in queryFilters.conditions"
         :key="condition.id"
         :condition
-        :schema="availableSchema"
+        :schema="filterSchema"
         @remove="queryFilters.removeConditions(condition)"
       />
       <!-- Add row should always be present -->

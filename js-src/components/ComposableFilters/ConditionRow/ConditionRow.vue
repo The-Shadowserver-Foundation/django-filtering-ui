@@ -6,18 +6,16 @@ import { lookupToLabel } from "@/utils/lookupMapping";
 
 const { condition, schema } = defineProps(["condition", "schema"]);
 
-const schemaField = computed(() => {
-  return schema.filter((x) => x.name == condition.identifier)[0];
-});
+const schemaField = computed(() => schema.filters[condition.identifier]);
 
 // --- Identifier ---
 const identifierOptions = computed(() => {
-  return schema.map((x) => {
+  return Object.entries(schema.filters).map(([name, value]) => {
     return {
-      value: x.name,
-      label: x.label,
-      description: x.description,
-      disabled: x.disabled || false,
+      value: name,
+      label: value.label,
+      description: value.description,
+      disabled: value.disabled || false,
     };
   });
 });

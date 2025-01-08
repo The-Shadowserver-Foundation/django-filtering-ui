@@ -5,11 +5,7 @@ import { mountFactory } from "../../../testing/helpers";
 import ConditionRow from "./ConditionRow.vue";
 
 describe("testing ConditionRow", () => {
-  const completeSchema = { ...exampleSchemaOne };
-  const schema = Object.entries(completeSchema.filters).map(([k, v]) => ({
-    name: k,
-    ...v,
-  }));
+  const schema = { ...exampleSchemaOne };
   const mountTarget = mountFactory(ConditionRow, {
     props: { schema },
   });
@@ -17,7 +13,6 @@ describe("testing ConditionRow", () => {
   test("renders condition", (context) => {
     const [identifier, relative, value] = ["name", "iexact", "foo"];
     const condition = new Condition(identifier, relative, value);
-    const schema = context.schema;
     const wrapper = mountTarget({
       props: { condition },
     });
@@ -35,7 +30,6 @@ describe("testing ConditionRow", () => {
 
   test("remove button emits 'remove' event", (context) => {
     const condition = new Condition();
-    const schema = context.schema;
     const wrapper = mountTarget({
       props: { condition },
     });
@@ -51,7 +45,6 @@ describe("testing ConditionRow", () => {
     // is set to the default first value
     // or is left the same if the changed from identifier has the same relative value available.
     const condition = new Condition();
-    const schema = context.schema;
     const wrapper = mountTarget({
       props: { condition },
     });
@@ -76,7 +69,7 @@ describe("testing ConditionRow", () => {
     await identifierSelect.setValue(currentIdentifier);
     // Check relative defaults to first available option
     expect(relativeSelect.element.value).toBe(
-      completeSchema.filters[currentIdentifier].lookups[0],
+      schema.filters[currentIdentifier].lookups[0],
     );
     await relativeSelect.setValue("istartswith");
     await valueInput.setValue("testing startswith");
@@ -87,7 +80,7 @@ describe("testing ConditionRow", () => {
     // Expect the relative to default to first available option and value
     // to be reset, because the previous relative is no longer an available option
     expect(relativeSelect.element.value).toBe(
-      completeSchema.filters[currentIdentifier].lookups[0],
+      schema.filters[currentIdentifier].lookups[0],
     );
     expect(valueInput.element.value).toBe("");
 
