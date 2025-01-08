@@ -1,26 +1,25 @@
-import { mount } from "@vue/test-utils";
 import { Condition } from "@/utils/query";
 
 import { exampleSchemaOne } from "@/testing/data";
+import { mountFactory } from "../../../testing/helpers";
 import ConditionRow from "./ConditionRow.vue";
 
 describe("testing ConditionRow", () => {
-  beforeEach((context) => {
-    context.completeSchema = exampleSchemaOne;
-    context.schema = Object.entries(context.completeSchema.filters).map(
-      ([k, v]) => ({
-        name: k,
-        ...v,
-      }),
-    );
+  const completeSchema = { ...exampleSchemaOne };
+  const schema = Object.entries(completeSchema.filters).map(([k, v]) => ({
+    name: k,
+    ...v,
+  }));
+  const mountTarget = mountFactory(ConditionRow, {
+    props: { schema },
   });
 
   test("renders condition", (context) => {
     const [identifier, relative, value] = ["name", "iexact", "foo"];
     const condition = new Condition(identifier, relative, value);
     const schema = context.schema;
-    const wrapper = mount(ConditionRow, {
-      props: { condition, schema },
+    const wrapper = mountTarget({
+      props: { condition },
     });
 
     // Check identifier
@@ -37,8 +36,8 @@ describe("testing ConditionRow", () => {
   test("remove button emits 'remove' event", (context) => {
     const condition = new Condition();
     const schema = context.schema;
-    const wrapper = mount(ConditionRow, {
-      props: { condition, schema },
+    const wrapper = mountTarget({
+      props: { condition },
     });
 
     // Get remove button and trigger
@@ -53,8 +52,8 @@ describe("testing ConditionRow", () => {
     // or is left the same if the changed from identifier has the same relative value available.
     const condition = new Condition();
     const schema = context.schema;
-    const wrapper = mount(ConditionRow, {
-      props: { condition, schema },
+    const wrapper = mountTarget({
+      props: { condition },
     });
 
     const identifierSelect = wrapper.get(".col:nth-of-type(1) select");
@@ -77,7 +76,7 @@ describe("testing ConditionRow", () => {
     await identifierSelect.setValue(currentIdentifier);
     // Check relative defaults to first available option
     expect(relativeSelect.element.value).toBe(
-      context.completeSchema.filters[currentIdentifier].lookups[0],
+      completeSchema.filters[currentIdentifier].lookups[0],
     );
     await relativeSelect.setValue("istartswith");
     await valueInput.setValue("testing startswith");
@@ -88,7 +87,7 @@ describe("testing ConditionRow", () => {
     // Expect the relative to default to first available option and value
     // to be reset, because the previous relative is no longer an available option
     expect(relativeSelect.element.value).toBe(
-      context.completeSchema.filters[currentIdentifier].lookups[0],
+      completeSchema.filters[currentIdentifier].lookups[0],
     );
     expect(valueInput.element.value).toBe("");
 

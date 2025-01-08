@@ -1,21 +1,33 @@
+import merge from "lodash/merge";
+
 import ComposableFilters from ".";
 import { mockWindowLocation } from "@/testing";
-import { mountTargetFactory } from "@/testing/helpers";
+import {
+  defaultComposableFiltersMountOptions,
+  mountFactory,
+} from "@/testing/helpers";
 import { exampleQValueOne } from "@/testing/data";
 
 describe("Tests ComposableFilters behavior", () => {
+  const mountTarget = mountFactory(
+    ComposableFilters,
+    merge(
+      {
+        global: { provide: { "debug-enabled": false } },
+      },
+      defaultComposableFiltersMountOptions,
+    ),
+  );
+
   beforeEach((context) => {
     mockWindowLocation();
     context.assignQ = (value) => {
       window.location.search = `?q=${JSON.stringify(value)}`;
     };
-
-    context.mount = mountTargetFactory(ComposableFilters, {
-      global: { provide: { "debug-enabled": false } },
-    });
   });
+
   test("first visit renders defaults", async (context) => {
-    const wrapper = context.mount();
+    const wrapper = mountTarget();
 
     // Check the top-level operator defaults to the 'and' state
     const topLevelOp = wrapper.get("#top-level-operator");
@@ -41,8 +53,9 @@ describe("Tests ComposableFilters behavior", () => {
     // ...which will have added to the q condition value
     expect(qInput.element.value).toEqual('["and",[[null,{}],[null,{}]]]');
   });
+
   test("changing the top-level operator", async (context) => {
-    const wrapper = context.mount();
+    const wrapper = mountTarget();
 
     // Check the top-level operator defaults to the 'and' state
     const topLevelOp = wrapper.get("#top-level-operator");
@@ -56,10 +69,11 @@ describe("Tests ComposableFilters behavior", () => {
     // Note, the first value of the array changed.
     expect(qInput.element.value).toEqual('["or",[[null,{}]]]');
   });
+
   test("editing filters renders current selection", (context) => {
     const qValue = exampleQValueOne;
     context.assignQ(qValue);
-    const wrapper = context.mount();
+    const wrapper = mountTarget();
 
     // Check the top-level operator defaults to the 'and' state
     const topLevelOp = wrapper.get("#top-level-operator");
@@ -90,6 +104,7 @@ describe("Tests ComposableFilters behavior", () => {
     const qInput = wrapper.get("form > input[name='q']");
     expect(qInput.element.value).toEqual(JSON.stringify(qValue));
   });
+
   test("cancel returns user to listing page", async (context) => {
     const indexUrl = "/listing";
     const mountOptions = {
@@ -99,19 +114,20 @@ describe("Tests ComposableFilters behavior", () => {
         },
       },
     };
-    const wrapper = context.mount(mountOptions);
+    const wrapper = mountTarget(mountOptions);
 
     const cancelButton = wrapper.get(".cancel");
     await cancelButton.trigger("click");
 
     expect(window.location.href).toEqual(indexUrl);
   });
+
   test("editing filters then cancel returns user to listing page with previous filters", async (context) => {
     const indexUrl = "/listing";
     const qValue = exampleQValueOne;
     context.assignQ(qValue);
 
-    const wrapper = context.mount({
+    const wrapper = mountTarget({
       global: {
         provide: {
           "model-index-url": indexUrl,
@@ -131,9 +147,10 @@ describe("Tests ComposableFilters behavior", () => {
     expect(window.location.href).toEqual(indexUrl);
     expect(window.location.search.get("q")).toEqual(JSON.stringify(qValue));
   });
+
   test("empty filters submitted, cancels form submission and redirects", async (context) => {
     const indexUrl = "/listing";
-    const wrapper = context.mount({
+    const wrapper = mountTarget({
       global: {
         provide: {
           "model-index-url": indexUrl,
@@ -151,11 +168,12 @@ describe("Tests ComposableFilters behavior", () => {
     expect(window.location.href).toEqual(indexUrl);
     expect(window.location.search.get("q")).toBe(null);
   });
+
   test("dropping null row(s) on submit", async (context) => {
     const indexUrl = "/listing";
     const qValue = Array.from(exampleQValueOne);
     context.assignQ(qValue);
-    const wrapper = context.mount({
+    const wrapper = mountTarget({
       global: { provide: { "model-index-url": indexUrl } },
     });
 
@@ -176,13 +194,14 @@ describe("Tests ComposableFilters behavior", () => {
     const qInput = await wrapper.get("form > input[name='q']");
     expect(qInput.element.value).toEqual(JSON.stringify(qValue));
   });
+
   test("dropping incomplete row(s) on submit", async (context) => {
     // FIXME This test has been written to work around the lack of black input
     //       validation reporting. Instead we simply drop the row for simplicity.
     const indexUrl = "/listing";
     const qValue = Array.from(exampleQValueOne);
     context.assignQ(qValue);
-    const wrapper = context.mount({
+    const wrapper = mountTarget({
       global: { provide: { "model-index-url": indexUrl } },
     });
 
@@ -196,5 +215,6 @@ describe("Tests ComposableFilters behavior", () => {
     const qInput = await wrapper.get("form > input[name='q']");
     expect(qInput.element.value).toEqual(JSON.stringify(qValue));
   });
+
   test.todo("stop submission on row error", () => {});
 });

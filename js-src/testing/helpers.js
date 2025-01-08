@@ -2,7 +2,7 @@ import { mount } from "@vue/test-utils";
 import merge from "lodash/merge";
 import { exampleSchemaOne } from "./data";
 
-export const defaultComponentMountOptions = {
+export const defaultComposableFiltersMountOptions = {
   global: {
     provide: {
       "model-index-url": "https://example.com",
@@ -13,7 +13,7 @@ export const defaultComponentMountOptions = {
   },
 };
 
-export function mountTargetFactory(component, predefinedOptions) {
+export function mountFactory(component, predefinedOptions) {
   // Factory for creating a `mount` with predefined target component.
   // The idea is to use the factory to produce a function that can be used
   // throughout the test suite.
@@ -23,7 +23,7 @@ export function mountTargetFactory(component, predefinedOptions) {
   // And then use it within the test like:
   //   const wrapper = context.mount();
   return (options) => {
-    const o = { ...defaultComponentMountOptions };
+    const o = {};
     merge(o, predefinedOptions, options);
     return mount(component, o);
   };
