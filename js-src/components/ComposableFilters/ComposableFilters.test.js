@@ -10,7 +10,9 @@ describe("Tests ComposableFilters behavior", () => {
       window.location.search = `?q=${JSON.stringify(value)}`;
     };
 
-    context.mount = mountTargetFactory(ComposableFilters);
+    context.mount = mountTargetFactory(ComposableFilters, {
+      global: { provide: { "debug-enabled": false } },
+    });
   });
   test("first visit renders defaults", async (context) => {
     const wrapper = context.mount();

@@ -30,7 +30,7 @@ export const defaultComponentMountOptions = {
   },
 };
 
-export function mountTargetFactory(component) {
+export function mountTargetFactory(component, predefinedOptions) {
   // Factory for creating a `mount` with predefined target component.
   // The idea is to use the factory to produce a function that can be used
   // throughout the test suite.
@@ -40,6 +40,7 @@ export function mountTargetFactory(component) {
   // And then use it within the test like:
   //   const wrapper = context.mount();
   return (options) => {
-    return mount(component, merge(defaultComponentMountOptions, options));
+    const o = { ...predefinedOptions, ...options };
+    return mount(component, merge(defaultComponentMountOptions, o));
   };
 }
