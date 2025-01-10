@@ -27,11 +27,10 @@ watch(
     // or when previous relative isn't available
     if (
       !condition.relative ||
-      (schemaField.value &&
-        !schemaField.value.lookups.includes(condition.relative))
+      (schemaField.value && !(condition.relative in schemaField.value.lookups))
     ) {
       // Apply a default value to the relative property
-      condition.relative = schemaField.value.lookups[0];
+      condition.relative = schemaField.value.default_lookup;
       // Reset the value
       condition.value = null;
     }
@@ -39,23 +38,33 @@ watch(
 );
 
 // --- Relative ---
-let relativeOptions = computed(() => {
+const relativeOptions = computed(() => {
   if (schemaField.value) {
-    return schemaField.value.lookups.map((x) => {
-      return { value: x, label: lookupToLabel(x) };
-    });
+    return Object.entries(schemaField.value.lookups).map(([k, v]) => ({
+      value: k,
+      meta: v,
+      label: lookupToLabel(k),
+    }));
   } else {
     return [];
   }
 });
+
+// --- Value ---
+const valueOptions = computed(
+  () => schemaField.value.lookups[condition.relative],
+);
 </script>
 
 <template>
   <div class="row">
     <div class="col">
+      <!-- Identifier -->
       <Select :options="identifierOptions" v-model="condition.identifier" />
     </div>
+
     <div class="col">
+      <!-- Relative -->
       <Select
         :options="relativeOptions"
         :includeBlank="false"
@@ -63,29 +72,37 @@ let relativeOptions = computed(() => {
         v-model="condition.relative"
       />
     </div>
+
     <div class="col">
-      <input
-        v-if="schemaField === undefined || schemaField.field_type === 'string'"
-        :disabled="!condition.identifier"
-        v-model="condition.value"
-      />
-      <span v-if="schemaField && schemaField.field_type === 'boolean'"
+      <!-- Value -->
+      <span v-if="!condition.identifier"
+        ><!-- placeholder --><input disabled
+      /></span>
+
+      <span v-else-if="valueOptions.type === 'toggle'"
         ><input
           type="radio"
-          id="true"
-          :value="true"
-          :name="condition.id"
+          :id="`true-value-${condition.id}`"
+          :value="valueOptions.true_choice[0]"
+          :name="`value-${condition.id}`"
           v-model="condition.value"
-        /><label for="true">True</label>
+        /><label :for="`true-value-${condition.id}`">{{
+          valueOptions.true_choice[1]
+        }}</label>
         <input
           type="radio"
-          id="false"
-          :value="false"
-          :name="condition.id"
+          :id="`false-value-${condition.id}`"
+          :value="valueOptions.false_choice[0]"
+          :name="`value-${condition.id}`"
           v-model="condition.value"
-        /><label for="false">False</label>
+        /><label :for="`false-value-${condition.id}`">{{
+          valueOptions.false_choice[1]
+        }}</label>
       </span>
+
+      <input v-else v-model="condition.value" />
     </div>
+
     <div class="col actions">
       <Button class="btn-small btn-delete" @click="$emit('remove')">-</Button>
     </div>

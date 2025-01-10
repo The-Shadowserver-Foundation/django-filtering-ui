@@ -1,20 +1,17 @@
 import { Condition } from "@/utils/query";
 
-import { exampleSchemaOne } from "@/testing/data";
-import { mountFactory } from "../../../testing/helpers";
+import { exampleSchemaOne, exampleSchemaTwo } from "@/testing/data";
+import { mountFactory } from "@/testing/helpers";
 import ConditionRow from "./ConditionRow.vue";
 
 describe("testing ConditionRow", () => {
-  const schema = { ...exampleSchemaOne };
-  const mountTarget = mountFactory(ConditionRow, {
-    props: { schema },
-  });
+  const mountTarget = mountFactory(ConditionRow);
 
   test("renders condition", (context) => {
     const [identifier, relative, value] = ["name", "iexact", "foo"];
     const condition = new Condition(identifier, relative, value);
     const wrapper = mountTarget({
-      props: { condition },
+      props: { condition, schema: exampleSchemaOne },
     });
 
     // Check identifier
@@ -31,7 +28,7 @@ describe("testing ConditionRow", () => {
   test("remove button emits 'remove' event", (context) => {
     const condition = new Condition();
     const wrapper = mountTarget({
-      props: { condition },
+      props: { condition, schema: exampleSchemaOne },
     });
 
     // Get remove button and trigger
@@ -45,13 +42,15 @@ describe("testing ConditionRow", () => {
     // is set to the default first value
     // or is left the same if the changed from identifier has the same relative value available.
     const condition = new Condition();
+    const schema = exampleSchemaOne;
     const wrapper = mountTarget({
-      props: { condition },
+      props: { condition, schema },
     });
 
     const identifierSelect = wrapper.get(".col:nth-of-type(1) select");
     const relativeSelect = wrapper.get(".col:nth-of-type(2) select");
-    const valueInput = wrapper.get(".col:nth-of-type(3) input");
+
+    const getValueInput = () => wrapper.get(".col:nth-of-type(3) input");
 
     // Verify the relative and value inputs are disabled,
     // because the identifier input has no value.
@@ -59,35 +58,35 @@ describe("testing ConditionRow", () => {
     expect(identifierSelect.isDisabled()).toBe(false);
     expect(relativeSelect.element.value).toBe("");
     expect(relativeSelect.isDisabled()).toBe(true);
-    expect(valueInput.element.value).toBe("");
-    expect(valueInput.isDisabled()).toBe(true);
+    expect(getValueInput().element.value).toBe("");
+    expect(getValueInput().isDisabled()).toBe(true);
 
     let currentIdentifier;
 
     // 1) Set the identifier to "description".
     currentIdentifier = "description";
     await identifierSelect.setValue(currentIdentifier);
-    // Check relative defaults to first available option
+    // Check relative defaults to the default_lookup option.
     expect(relativeSelect.element.value).toBe(
-      schema.filters[currentIdentifier].lookups[0],
+      schema.filters[currentIdentifier].default_lookup,
     );
     await relativeSelect.setValue("istartswith");
-    await valueInput.setValue("testing startswith");
+    await getValueInput().setValue("testing startswith");
 
     // 2) Set the identifier to "name".
     currentIdentifier = "name";
     await identifierSelect.setValue(currentIdentifier);
-    // Expect the relative to default to first available option and value
-    // to be reset, because the previous relative is no longer an available option
+    // Expect the relative to default to the default_lookup option and the value
+    // to be reset, because the previous relative is no longer an available option.
     expect(relativeSelect.element.value).toBe(
-      schema.filters[currentIdentifier].lookups[0],
+      schema.filters[currentIdentifier].default_lookup,
     );
-    expect(valueInput.element.value).toBe("");
+    expect(getValueInput().element.value).toBe("");
 
     // 2.a) Set the relative to `icontains`,
     // which is shared between 'name' and 'description' fields.
     await relativeSelect.setValue("icontains");
-    await valueInput.setValue("testing contains");
+    await getValueInput().setValue("testing contains");
 
     // 3) Set the identifier back to 'description'.
     currentIdentifier = "description";
@@ -95,11 +94,28 @@ describe("testing ConditionRow", () => {
     // Expect the relative and value to remain,
     // because the relative is available for both 'name' and 'description' identifiers.
     expect(relativeSelect.element.value).toBe("icontains");
-    expect(valueInput.element.value).toBe("testing contains");
+    expect(getValueInput().element.value).toBe("testing contains");
   });
 
-  test.todo(
-    "boolean field-type renders true or false value selection",
-    () => {},
-  );
+  test("toggled lookup type renders true or false value selection", async () => {
+    const [identifier, relative, value] = ["is_family", "exact", false];
+    const condition = new Condition(identifier, relative, value);
+    const wrapper = mountTarget({
+      props: { condition, schema: exampleSchemaTwo },
+    });
+
+    // Check identifier
+    const identifierSelect = wrapper.get(".col:nth-of-type(1) select");
+    expect(identifierSelect.element.value).toBe(identifier);
+    // Check relative
+    const relativeSelect = wrapper.get(".col:nth-of-type(2) select");
+    expect(relativeSelect.element.value).toBe(relative);
+    // Check value
+    const [trueValueInput, falseValueInput] = wrapper.findAll(
+      ".col:nth-of-type(3) input",
+    );
+    // Looking for the correct initial value
+    expect(trueValueInput.element.checked).toBe(false);
+    expect(falseValueInput.element.checked).toBe(true);
+  });
 });

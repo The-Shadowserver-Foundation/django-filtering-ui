@@ -2,15 +2,20 @@ export const exampleSchemaOne = {
   operators: {},
   filters: {
     name: {
-      type: "field",
-      field_type: "string",
-      lookups: ["iexact", "icontains"],
+      default_lookup: "iexact",
+      lookups: {
+        icontains: { type: "input" },
+        iexact: { type: "input" },
+      },
       label: "Name",
     },
     description: {
-      type: "field",
-      field_type: "string",
-      lookups: ["icontains", "iendswith", "istartswith"],
+      default_lookup: "icontains",
+      lookups: {
+        icontains: { type: "input" },
+        iendswith: { type: "input" },
+        istartswith: { type: "input" },
+      },
       label: "Description",
     },
   },
@@ -23,3 +28,39 @@ export const exampleQValueOne = [
     ["description", { lookup: "icontains", value: "foo." }],
   ],
 ];
+
+export const exampleSchemaTwo = {
+  operators: {},
+  filters: {
+    // Example comes from MITRE Software object properties
+    // where type is a CharField with choices
+    // and is_family is a BooleanField.
+    type: {
+      default_lookup: "exact",
+      lookups: {
+        exact: {
+          type: "choice",
+          choices: [
+            ["tool", "Tool"],
+            ["malware", "Malware"],
+          ],
+        },
+        icontains: {
+          type: "input",
+        },
+      },
+      label: "Type",
+    },
+    is_family: {
+      default_lookup: "exact",
+      lookups: {
+        exact: {
+          type: "toggle",
+          true_choice: [true, "Yes"],
+          false_choice: [false, "No"],
+        },
+      },
+      label: "Is family?",
+    },
+  },
+};
