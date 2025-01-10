@@ -50,7 +50,7 @@ Note, I'm testing within a docker container, because I never run anything locall
 There are two containers, one for each language; Python for the backend and Node for the frontend.
 For the moment the containers is simply run with:
 
-    docker run -d --rm --name django-filtering-ui--frontend --workdir /code -v $PWD:/code -p 5173:5173 node:latest sleep infinity
+    docker run -d --rm --name django-filtering-ui--frontend --workdir /code -v $PWD:/code -p 5173:5173 -p 9223:9223 node:latest sleep infinity
     docker run -d --rm --name django-filtering-ui--backend --workdir /code -v $PWD:/code python:3.12 sleep infinity
 
 Then I execute commands on the shell within it:
@@ -61,6 +61,14 @@ From here you can install and run the frontend code tests using:
 
     npm install
     npm run test
+
+### Test debugging
+
+To use the chrome debugger use the following:
+
+    npm exec -- vitest --inspect-brk 0.0.0.0:9223 --no-file-parallelism -t $TEST_FILE
+
+Then open `chrome://inspect` and `0.0.0.0:9223` as a network target.
 
 ## Building for release
 
