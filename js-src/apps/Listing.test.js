@@ -13,15 +13,16 @@ describe("testing high-level lozenge interface rendering", () => {
     defaultComposableFiltersMountOptions,
   );
 
-  beforeEach((context) => {
+  const assignQ = (value) => {
+    window.location.search = `?q=${JSON.stringify(value)}`;
+  };
+
+  beforeEach(() => {
     mockWindowLocation();
-    context.assignQ = (value) => {
-      window.location.search = `?q=${JSON.stringify(value)}`;
-    };
   });
 
-  test("renders a simple query", (context) => {
-    context.assignQ(exampleQValueOne);
+  test("renders a simple query", () => {
+    assignQ(exampleQValueOne);
     const wrapper = mountTarget();
 
     // Check the preamble text renders 'any'
