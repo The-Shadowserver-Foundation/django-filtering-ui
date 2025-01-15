@@ -10,7 +10,17 @@ export class Condition {
     this.id = makeId();
     this.identifier = identifier;
     this.relative = relative;
-    this.value = value;
+    this._value = value;
+  }
+  get value() {
+    return this._value;
+  }
+  set value(newValue) {
+    if (newValue !== null) {
+      this._value = newValue.toString();
+    } else {
+      this._value = newValue;
+    }
   }
   toObject() {
     return [this.identifier, { lookup: this.relative, value: this.value }];

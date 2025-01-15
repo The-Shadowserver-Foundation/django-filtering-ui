@@ -118,4 +118,24 @@ describe("testing ConditionRow", () => {
     expect(trueValueInput.element.checked).toBe(false);
     expect(falseValueInput.element.checked).toBe(true);
   });
+
+  test("choice lookup type renders select with choice options", async () => {
+    const [identifier, relative, value] = ["type", "exact", "tool"];
+    const condition = new Condition(identifier, relative, value);
+    const wrapper = mountTarget({
+      props: { condition, schema: exampleSchemaTwo },
+    });
+
+    // Check identifier
+    const identifierSelect = wrapper.get(".col:nth-of-type(1) select");
+    expect(identifierSelect.element.value).toBe(identifier);
+    // Check relative
+    const relativeSelect = wrapper.get(".col:nth-of-type(2) select");
+    expect(relativeSelect.element.value).toBe(relative);
+    // Check value
+    const valueSelect = wrapper.get(".col:nth-of-type(3) select");
+    expect(valueSelect.element.value).toBe(value);
+    await valueSelect.setValue("malware");
+    expect(valueSelect.element.value).toBe("malware");
+  });
 });

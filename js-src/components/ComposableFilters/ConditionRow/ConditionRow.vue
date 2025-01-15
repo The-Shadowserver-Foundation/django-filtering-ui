@@ -51,9 +51,19 @@ const relativeOptions = computed(() => {
 });
 
 // --- Value ---
-const valueOptions = computed(
-  () => schemaField.value.lookups[condition.relative],
-);
+const valueOptions = computed(() => {
+  const info = { ...schemaField.value.lookups[condition.relative] };
+  if (info.type === "choice") {
+    info.choices = info.choices.map(([value, label]) => ({
+      // FIXME Ideally the value can stay the native primative,
+      //   but the django-filtering lacks the type implementation
+      //   to derive the field's type, which would give the jsonschema a valid type.
+      value: value.toString(),
+      label,
+    }));
+  }
+  return info;
+});
 </script>
 
 <template>
@@ -78,6 +88,15 @@ const valueOptions = computed(
       <span v-if="!condition.identifier"
         ><!-- placeholder --><input disabled
       /></span>
+
+      <span v-else-if="valueOptions.type === 'choice'">
+        <Select
+          :options="valueOptions.choices"
+          :includeBlank="false"
+          :disabled="!condition.identifier"
+          v-model="condition.value"
+        />
+      </span>
 
       <span v-else-if="valueOptions.type === 'toggle'"
         ><input
