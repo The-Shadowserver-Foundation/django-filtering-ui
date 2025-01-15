@@ -7,6 +7,17 @@ const relativeLabel = lookupToLabel(condition.relative);
 const schemaField = computed(() => {
   return schema.filter((x) => x.name == condition.identifier)[0];
 });
+const relativeLookupInfo = computed(() => {
+  return schemaField.value.lookups[condition.relative];
+});
+
+const getChoiceLabel = () => {
+  // Find the choice in the array of choices.
+  // Each choice is an array of [value, label].
+  return relativeLookupInfo.value.choices.filter(
+    ([v]) => v.toString() === condition.value,
+  )[0][1];
+};
 </script>
 
 <template>
@@ -19,9 +30,13 @@ const schemaField = computed(() => {
       relativeLabel
     }}</span
     >&nbsp;
-    <span class="value" :data-value="condition.value">{{
-      condition.value
-    }}</span>
+    <span class="value" :data-value="condition.value">
+      <template
+        v-if="schemaField.lookups[condition.relative].type == 'choice'"
+        >{{ getChoiceLabel() }}</template
+      >
+      <template v-else>{{ condition.value }}</template>
+    </span>
     <a class="clear" href="#" title="clear" @click="$emit('remove')">x</a>
   </div>
 </template>
