@@ -2,7 +2,6 @@
 import { computed, defineProps, watch } from "vue";
 import Button from "@/components/form/Button.vue";
 import Select from "@/components/form/Select.vue";
-import { lookupToLabel } from "@/utils/lookupMapping";
 
 const { condition, schema } = defineProps(["condition", "schema"]);
 
@@ -42,8 +41,7 @@ const relativeOptions = computed(() => {
   if (schemaField.value) {
     return Object.entries(schemaField.value.lookups).map(([k, v]) => ({
       value: k,
-      meta: v,
-      label: lookupToLabel(k),
+      label: v.label,
     }));
   } else {
     return [];

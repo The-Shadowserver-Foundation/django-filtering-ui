@@ -1,14 +1,16 @@
 <script setup>
 import { computed, defineProps } from "vue";
-import { lookupToLabel } from "@/utils/lookupMapping";
 
 const { schema, condition } = defineProps(["schema", "condition"]);
-const relativeLabel = lookupToLabel(condition.relative);
+
 const schemaField = computed(() => {
   return schema.filter((x) => x.name == condition.identifier)[0];
 });
 const relativeLookupInfo = computed(() => {
   return schemaField.value.lookups[condition.relative];
+});
+const relativeLabel = computed(() => {
+  return relativeLookupInfo.value.label;
 });
 
 const getChoiceLabel = () => {

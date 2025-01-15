@@ -40,6 +40,7 @@ export const exampleSchemaTwo = {
       lookups: {
         exact: {
           type: "choice",
+          label: "is",
           choices: [
             ["tool", "Tool"],
             ["malware", "Malware"],
@@ -47,6 +48,7 @@ export const exampleSchemaTwo = {
         },
         icontains: {
           type: "input",
+          label: "contains",
         },
       },
       label: "Type",
@@ -56,6 +58,7 @@ export const exampleSchemaTwo = {
       lookups: {
         exact: {
           type: "toggle",
+          label: "is",
           true_choice: [true, "Yes"],
           false_choice: [false, "No"],
         },

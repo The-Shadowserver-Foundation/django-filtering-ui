@@ -5,18 +5,6 @@ const OPERATOR_MAP = {
   not: "none",
 };
 
-const LOOKUP_MAP = {
-  istartswith: "starts with",
-  iendswith: "ends with",
-  icontains: "contains",
-  iexact: "equals",
-  exact: "equals",
-};
-
-export const lookupToLabel = (lookup) => {
-  return LOOKUP_MAP[lookup];
-};
-
 export const operatorToLabel = (op) => {
   return OPERATOR_MAP[op];
 };
