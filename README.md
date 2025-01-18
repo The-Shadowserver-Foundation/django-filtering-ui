@@ -1,6 +1,8 @@
 # Django Filtering UI
 
-A Django app for providing a user interface (UI) to the `django-filtering` package.
+A Django app for providing a user interface (UI) to the
+[`django-filtering`](https://github.com/The-Shadowserver-Foundation/django-filtering)
+package.
 
 The original usecase for the project's UI required the following:
 
