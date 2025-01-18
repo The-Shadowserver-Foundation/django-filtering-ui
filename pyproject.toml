@@ -26,8 +26,8 @@ dependencies = ["django-filtering>=0.0.3"]
 tests = ["pytest", "pytest-django", "ipdb", "model_bakery"]
 
 [project.urls]
-Homepage = "https://github.com/mmulich/django-filtering-ui"
-Issues = "https://github.com/mmulich/django-filtering-ui/issues"
+Homepage = "https://github.com/The-Shadowserver-Foundation/django-filtering-ui"
+Issues = "https://github.com/The-Shadowserver-Foundation/django-filtering-ui/issues"
 
 [tool.hatch.build.targets.sdist]
 artifacts = ["src/django_filtering_ui/static/django-filtering-ui"]
