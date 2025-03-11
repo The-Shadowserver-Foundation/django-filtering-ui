@@ -27,19 +27,6 @@ const matchOptions = [
   { value: "or", label: "Any of" },
 ];
 
-const updateSchemaItem = (schemaItem) => {
-  const { nargs } = schemaItem;
-  const activeUseCount = queryFilters.conditions.reduce(
-    (acc, c) => (c.identifier === schemaItem.name ? acc + 1 : acc),
-    0,
-  );
-  return {
-    ...schemaItem,
-    // Define the schema item as disable
-    disabled: nargs && nargs <= activeUseCount,
-  };
-};
-
 // Computes the query into the end result for form submission.
 const renderedQueryFilters = computed(() =>
   JSON.stringify(queryFilters.toObject()),
