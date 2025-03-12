@@ -6,37 +6,35 @@ import Lozenge from "@/components/Lozenge.vue";
 import useQueryFilters from "@/composables/useQueryFilters";
 import { operatorToLabel } from "@/utils/lookupMapping";
 
-const [queryFilters] = useQueryFilters();
 const filterSchema = inject("filtering-options-schema");
+const { grouping, stickies } = useQueryFilters({ optionsSchema: filterSchema });
 // FIXME The structure of this content changed,
 //       but the underlying code has yet to be changed.
 const revisedFilterSchema = Object.entries(filterSchema.filters).map(
   ([k, v]) => ({ name: k, ...v }),
 );
-const rootOperatorLabel = queryFilters
-  ? operatorToLabel(queryFilters.operation)
-  : null;
+const rootOperatorLabel = grouping ? operatorToLabel(grouping.operation) : null;
 
 const handleLozengeRemove = (condition) => {
   // Remove the condition from the query filters
-  queryFilters.removeConditions(condition);
+  grouping.removeConditions(condition);
   // Build new url with updated query data
   const url = new URL(window.location);
   // Check if all conditions have been removed
-  if (queryFilters.conditions.length == 0) {
+  if (grouping.conditions.length == 0) {
     url.searchParams.delete("q");
   } else {
-    url.searchParams.set("q", JSON.stringify(queryFilters.toObject()));
+    url.searchParams.set("q", JSON.stringify(grouping.toObject()));
   }
   window.location.assign(url);
 };
 </script>
 
 <template>
-  <div class="filter-container" v-if="queryFilters">
+  <div class="filter-container" v-if="grouping">
     <span class="preamble"> Results match {{ rootOperatorLabel }} of: </span>
     <Lozenge
-      v-for="condition in queryFilters.conditions"
+      v-for="condition in grouping.conditions"
       :key="condition.id"
       :condition
       :schema="revisedFilterSchema"

@@ -18,8 +18,9 @@ const debugEnabled = inject("debug-enabled");
 
 // The query filters (from the search params / query string)
 // made into reactive objects.
-const [queryFilters, originalQueryFiltersData] = useQueryFilters({
+const { grouping, original } = useQueryFilters({
   createDefault: true,
+  optionsSchema: filterSchema,
 });
 
 const matchOptions = [
@@ -29,13 +30,12 @@ const matchOptions = [
 
 // Computes the query into the end result for form submission.
 const renderedQueryFilters = computed(() =>
-  JSON.stringify(queryFilters.toObject()),
+  JSON.stringify(grouping.toObject()),
 );
 
 const cancelHandler = () => {
   let url = indexUrl;
-  if (originalQueryFiltersData)
-    url += `?q=${JSON.stringify(originalQueryFiltersData)}`;
+  if (original) url += `?q=${JSON.stringify(original)}`;
   window.location.assign(url);
 };
 
@@ -43,7 +43,7 @@ const submitHandler = async (e) => {
   let url = indexUrl;
   const conditions = [];
   // Remove obviously incomplete rows
-  for (const condition of queryFilters.conditions) {
+  for (const condition of grouping.conditions) {
     if (
       condition.identifier == undefined &&
       condition.relative == undefined &&
@@ -57,8 +57,8 @@ const submitHandler = async (e) => {
       conditions.push(condition);
     }
   }
-  queryFilters.removeConditions(...conditions);
-  if (queryFilters.conditions.length == 0) {
+  grouping.removeConditions(...conditions);
+  if (grouping.conditions.length == 0) {
     // FIXME Ideally we handle this case with error state preventing submission.
     //       This is a workaround since error state hasn't yet been implemented.
     e.preventDefault();
@@ -78,7 +78,7 @@ const submitHandler = async (e) => {
           Match
           <Select
             id="top-level-operator"
-            v-model="queryFilters.operation"
+            v-model="grouping.operation"
             :options="matchOptions"
             :includeBlank="false"
           />
@@ -87,11 +87,11 @@ const submitHandler = async (e) => {
       </div>
       <!-- All rows beyond this point are criteria -->
       <ConditionRow
-        v-for="condition in queryFilters.conditions"
+        v-for="condition in grouping.conditions"
         :key="condition.id"
         :condition
         :schema="filterSchema"
-        @remove="queryFilters.removeConditions(condition)"
+        @remove="grouping.removeConditions(condition)"
       />
       <!-- Add row should always be present -->
       <div class="row">
@@ -99,7 +99,7 @@ const submitHandler = async (e) => {
           <Button
             id="add-condition"
             class="btn btn-small"
-            @click="queryFilters.addConditions(new Condition())"
+            @click="grouping.addConditions(new Condition())"
             >+</Button
           >
         </div>
@@ -118,7 +118,7 @@ const submitHandler = async (e) => {
     <hr />
     <DebugDataDisplay
       name="Query Filters data"
-      :data="queryFilters.toObject()"
+      :data="grouping.toObject()"
       :expanded="true"
     />
     <DebugDataDisplay name="Options Schema" :data="filterSchema" />

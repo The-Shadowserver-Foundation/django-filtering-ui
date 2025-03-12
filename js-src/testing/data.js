@@ -67,3 +67,44 @@ export const exampleSchemaTwo = {
     },
   },
 };
+
+export const exampleSchemaThree = {
+  operators: {},
+  filters: {
+    type: {
+      default_lookup: "exact",
+      lookups: {
+        exact: {
+          type: "choice",
+          label: "is",
+          choices: [
+            ["any", "Any"],
+            ["manual", "Manual"],
+            ["bulk", "Bulk"],
+          ],
+        },
+      },
+      label: "Type",
+      is_sticky: true,
+      sticky_default: [
+        "type",
+        {
+          value: "manual",
+          lookup: "exact",
+        },
+      ],
+    },
+    is_family: {
+      default_lookup: "exact",
+      lookups: {
+        exact: {
+          type: "toggle",
+          label: "is",
+          true_choice: [true, "Yes"],
+          false_choice: [false, "No"],
+        },
+      },
+      label: "Is family?",
+    },
+  },
+};
