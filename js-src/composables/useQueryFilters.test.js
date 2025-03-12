@@ -59,6 +59,24 @@ describe("tests for useQueryFilters", () => {
     expect(original).toEqual(null);
   });
 
+  test("when no data provided, but stickies present", () => {
+    const { grouping, stickies, original } = useQueryFilters({
+      optionsSchema: exampleSchemaThree,
+    });
+
+    // Check for no grouping data
+    expect(grouping).toBe(null);
+    // Check for the creation of the default sticky condition
+    expect(stickies.value.length).toEqual(1);
+    const typeStickyDefault = exampleSchemaThree.filters.type.sticky_default;
+    expect(stickies.value[0].identifier).toEqual(typeStickyDefault[0]);
+    expect(stickies.value[0].relative).toEqual(typeStickyDefault[1].lookup);
+    expect(stickies.value[0].value).toEqual(typeStickyDefault[1].value);
+
+    // Check the originalData is equal to the query string value
+    expect(original).toEqual(null);
+  });
+
   test("when sticky condition included in data", async () => {
     const qTypeValue = "all";
     const qValue = ["and", [["type", { lookup: "exact", value: qTypeValue }]]];

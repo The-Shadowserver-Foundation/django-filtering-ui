@@ -81,6 +81,8 @@ export default (options = {}) => {
     // Create a default when the source query filter data doesn't exist.
     grouping = new Grouping("and", [new Condition()]);
     stickies = getAllStickyDefaults(optionsSchema);
+  } else {
+    stickies = getAllStickyDefaults(optionsSchema);
   }
   stickies = ref(stickies);
 
