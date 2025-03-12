@@ -1,7 +1,11 @@
 <script setup>
 import { computed, defineProps } from "vue";
 
-const { schema, condition } = defineProps(["schema", "condition"]);
+const { schema, condition, disableRemove } = defineProps([
+  "schema",
+  "condition",
+  "disableRemove",
+]);
 
 const schemaField = computed(() => {
   return schema.filter((x) => x.name == condition.identifier)[0];
@@ -39,7 +43,14 @@ const getChoiceLabel = () => {
       >
       <template v-else>{{ condition.value }}</template>
     </span>
-    <a class="clear" href="#" title="clear" @click="$emit('remove')">x</a>
+    <a
+      v-if="!disableRemove"
+      class="clear"
+      href="#"
+      title="clear"
+      @click="$emit('remove')"
+      >x</a
+    >
   </div>
 </template>
 
