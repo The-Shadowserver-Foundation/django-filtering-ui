@@ -6,10 +6,12 @@ import {
   defaultComposableFiltersMountOptions,
   mountFactory,
 } from "@/testing/helpers";
-import { merge } from "lodash";
 
 describe("testing high-level lozenge interface rendering", () => {
-  const mountTarget = mountFactory(Listing);
+  const mountTarget = mountFactory(
+    Listing,
+    defaultComposableFiltersMountOptions,
+  );
 
   const assignQ = (value) => {
     window.location.search = `?q=${JSON.stringify(value)}`;
@@ -21,7 +23,7 @@ describe("testing high-level lozenge interface rendering", () => {
 
   test("renders a simple query", () => {
     assignQ(exampleQValueOne);
-    const wrapper = mountTarget(defaultComposableFiltersMountOptions);
+    const wrapper = mountTarget();
 
     // Check the preamble text renders 'any'
     // for the `or` operator in the query data.
@@ -42,14 +44,9 @@ describe("testing high-level lozenge interface rendering", () => {
   test("renders with a choice type lookup", () => {
     const qValue = ["or", [["type", { lookup: "exact", value: "tool" }]]];
     assignQ(qValue);
-    const wrapper = mountTarget(
-      merge(
-        { ...defaultComposableFiltersMountOptions },
-        {
-          global: { provide: { "filtering-options-schema": exampleSchemaTwo } },
-        },
-      ),
-    );
+    const wrapper = mountTarget({
+      global: { provide: { "filtering-options-schema": exampleSchemaTwo } },
+    });
 
     const lozenges = wrapper.findAllComponents({ name: "Lozenge" });
     for (const i in lozenges) {
