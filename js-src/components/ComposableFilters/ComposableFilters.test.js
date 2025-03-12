@@ -1,12 +1,15 @@
 import merge from "lodash/merge";
 
 import ComposableFilters from ".";
+import { Condition } from "@/utils/query";
 import { mockWindowLocation } from "@/testing";
 import {
   defaultComposableFiltersMountOptions,
   mountFactory,
 } from "@/testing/helpers";
-import { exampleQValueOne } from "@/testing/data";
+import { exampleQValueOne, exampleSchemaThree } from "@/testing/data";
+
+const BLANK_CONDTION = JSON.parse(JSON.stringify(new Condition().toObject()));
 
 describe("Tests ComposableFilters behavior", () => {
   const mountTarget = mountFactory(
@@ -217,4 +220,104 @@ describe("Tests ComposableFilters behavior", () => {
   });
 
   test.todo("stop submission on row error", () => {});
+
+  test("sticky condition appears but does not submit with default value", async (context) => {
+    const indexUrl = "/listing";
+    const stickyDefault = exampleSchemaThree.filters.type.sticky_default;
+
+    const wrapper = mountTarget({
+      global: {
+        provide: {
+          "model-index-url": indexUrl,
+          "filtering-options-schema": exampleSchemaThree,
+        },
+      },
+    });
+
+    // Check the form contains the sticky row with default value.
+    expect(wrapper.vm.stickies.length).toBe(1);
+    const stickyRow = wrapper.get("div.row:nth-of-type(2)");
+    expect(stickyRow.get(".col:nth-of-type(1) select").element.value).toEqual(
+      stickyDefault[0],
+    );
+    expect(stickyRow.get(".col:nth-of-type(2) select").element.value).toEqual(
+      stickyDefault[1]["lookup"],
+    );
+    expect(stickyRow.get(".col:nth-of-type(3) select").element.value).toEqual(
+      stickyDefault[1]["value"],
+    );
+
+    // Check the 'q' value of the form
+    const form = wrapper.get("form");
+    const qInput = form.get("input[name='q']");
+    expect(qInput.element.value).toEqual(
+      JSON.stringify(["and", [new Condition().toObject()]]),
+    );
+
+    // Trigger submit
+    await form.trigger("submit");
+
+    // Check the form submission cancelled,
+    // due no new conditions or changes to the sticky condition.
+    // Check the url has been to the index url and the q value remains the same.
+    expect(window.location.href).toEqual(indexUrl);
+    expect(window.location.search.get("q")).toBe(null);
+  });
+
+  test("sticky condition submits with edited value", async (context) => {
+    const indexUrl = "/listing";
+    const stickyDefault = exampleSchemaThree.filters.type.sticky_default;
+
+    const wrapper = mountTarget({
+      global: {
+        provide: {
+          "model-index-url": indexUrl,
+          "filtering-options-schema": exampleSchemaThree,
+        },
+      },
+    });
+
+    // Check the form contains the sticky row with default value.
+    expect(wrapper.vm.stickies.length).toBe(1);
+    const stickyRow = wrapper.get("div.row:nth-of-type(2)");
+
+    // Edit the sticky row's value
+    const newValue = "any";
+    await stickyRow.get(".col:nth-of-type(3) select").setValue(newValue);
+
+    // Check for correct form values
+    expect(stickyRow.get(".col:nth-of-type(1) select").element.value).toEqual(
+      stickyDefault[0],
+    );
+    expect(stickyRow.get(".col:nth-of-type(2) select").element.value).toEqual(
+      stickyDefault[1]["lookup"],
+    );
+    expect(stickyRow.get(".col:nth-of-type(3) select").element.value).toEqual(
+      newValue,
+    );
+
+    // Check the resulting value has dropped the incomplete row
+    const expectedQValue = [
+      "and",
+      [
+        [stickyDefault[0], { ...stickyDefault[1], value: newValue }],
+        BLANK_CONDTION,
+      ],
+    ];
+
+    // Check the 'q' value of the form
+    const form = wrapper.get("form");
+    const qInput = form.get("input[name='q']");
+    expect(JSON.parse(qInput.element.value)).toEqual(expectedQValue);
+
+    // Trigger submit
+    await form.trigger("submit");
+
+    // Check the 'q' value of the form after submission
+    const expectedQSubmission = [
+      "and",
+      [[stickyDefault[0], { ...stickyDefault[1], value: newValue }]],
+    ];
+    expect(JSON.parse(qInput.element.value)).toEqual(expectedQSubmission);
+  });
 });

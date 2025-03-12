@@ -5,6 +5,7 @@ import Button from "@/components/form/Button.vue";
 import Select from "@/components/form/Select.vue";
 import DebugDataDisplay from "@/components/DebugDataDisplay.vue";
 import ConditionRow from "./ConditionRow";
+import StickyConditionRow from "./StickyConditionRow";
 
 import useCsrfToken from "@/composables/useCsrfToken";
 import useQueryFilters from "@/composables/useQueryFilters";
@@ -18,7 +19,7 @@ const debugEnabled = inject("debug-enabled");
 
 // The query filters (from the search params / query string)
 // made into reactive objects.
-const { grouping, original } = useQueryFilters({
+const { grouping, stickies, original } = useQueryFilters({
   createDefault: true,
   optionsSchema: filterSchema,
 });
@@ -28,10 +29,33 @@ const matchOptions = [
   { value: "or", label: "Any of" },
 ];
 
+// Computes an array of sticky conditions that have been changed from their default.
+const changedStickies = computed(() => {
+  const nonDefaultStickies = [];
+  if (stickies.value.length > 0) {
+    for (const c of stickies.value) {
+      const stickyDefault = filterSchema.filters[c.identifier].sticky_default;
+      if (
+        c.relative !== stickyDefault[1]["lookup"] ||
+        c.value !== stickyDefault[1]["value"]
+      ) {
+        nonDefaultStickies.push(c);
+      }
+    }
+  }
+  return nonDefaultStickies;
+});
+
 // Computes the query into the end result for form submission.
-const renderedQueryFilters = computed(() =>
-  JSON.stringify(grouping.toObject()),
-);
+const renderedQueryFilters = computed(() => {
+  const q = grouping.toObject();
+  // Prepend the sticky conditions.
+  // This is so they will be popped off correctly when read again from this component, etc.
+  for (const c of changedStickies.value.toReversed()) {
+    q[1].unshift(c.toObject());
+  }
+  return JSON.stringify(q);
+});
 
 const cancelHandler = () => {
   let url = indexUrl;
@@ -58,7 +82,9 @@ const submitHandler = async (e) => {
     }
   }
   grouping.removeConditions(...conditions);
-  if (grouping.conditions.length == 0) {
+
+  // Cancel the form submission if there are no conditions to submit.
+  if (grouping.conditions.length == 0 && changedStickies.value.length == 0) {
     // FIXME Ideally we handle this case with error state preventing submission.
     //       This is a workaround since error state hasn't yet been implemented.
     e.preventDefault();
@@ -85,7 +111,14 @@ const submitHandler = async (e) => {
           the following criteria...
         </div>
       </div>
-      <!-- All rows beyond this point are criteria -->
+      <!-- Sticky criteria rows -->
+      <StickyConditionRow
+        v-for="condition in stickies"
+        :key="condition.id"
+        :condition
+        :schema="filterSchema"
+      />
+      <!-- Mutable criteria rows -->
       <ConditionRow
         v-for="condition in grouping.conditions"
         :key="condition.id"
@@ -130,6 +163,7 @@ const submitHandler = async (e) => {
 :deep(.row) {
   margin-bottom: 10px;
   border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
 }
 :deep(.col.actions) {
   text-align: right;
