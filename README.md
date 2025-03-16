@@ -55,16 +55,21 @@ For the moment the containers is simply run with:
     docker run -d --rm --name django-filtering-ui--frontend --workdir /code -v $PWD:/code -p 5173:5173 -p 9223:9223 node:latest sleep infinity
     docker run -d --rm --name django-filtering-ui--backend --workdir /code -v $PWD:/code python:3.12 sleep infinity
 
-Then I execute commands on the shell within it:
+#### Testing the frontend
 
-    docker exec -it django-filtering-ui--frontend bash
+Execute testing commands:
 
-From here you can install and run the frontend code tests using:
+    docker exec django-filtering-ui--frontend npm install
+    docker exec django-filtering-ui--frontend npm run test
 
-    npm install
-    npm run test
+#### Testing the backend
 
-### Test debugging
+Execute testing commands:
+
+    docker exec django-filtering-ui--backend pip install -e ".[tests]"
+    docker exec django-filtering-ui--backend pytest
+
+#### Using the debugger when testing the frontend
 
 To use the chrome debugger use the following:
 
