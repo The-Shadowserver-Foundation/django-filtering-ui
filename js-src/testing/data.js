@@ -108,3 +108,49 @@ export const exampleSchemaThree = {
     },
   },
 };
+
+export const exampleSchemaFour = {
+  operators: {},
+  filters: {
+    brand: {
+      default_lookup: "exact",
+      is_sticky: true,
+      label: "Brand",
+      lookups: {
+        exact: {
+          choices: [
+            ("all", "All brands"),
+            ("Delta", "Delta"),
+            ("MOEN", "MOEN"),
+            ("Glacier Bay", "Glacier Bay"),
+          ],
+          label: "is",
+          type: "choice",
+        },
+      },
+      sticky_default: ["brand", { lookup: "exact", value: "MOEN" }],
+    },
+    category: {
+      default_lookup: "exact",
+      is_sticky: true,
+      label: "Category",
+      lookups: {
+        exact: {
+          choices: [
+            ("Bath", "Bath"),
+            ("Kitchen", "Kitchen"),
+            ("Patio", "Patio"),
+          ],
+          label: "equals",
+          type: "choice",
+        },
+      },
+      sticky_default: ["category", { lookup: "exact", value: "Kitchen" }],
+    },
+    name: {
+      default_lookup: "icontains",
+      label: "Name",
+      lookups: { icontains: { label: "contains", type: "input" } },
+    },
+  },
+};

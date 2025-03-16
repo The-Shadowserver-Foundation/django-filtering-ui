@@ -1,5 +1,5 @@
 <script setup>
-import { computed, inject } from "vue";
+import { inject } from "vue";
 
 import Button from "@/components/form/Button.vue";
 import Select from "@/components/form/Select.vue";
@@ -19,7 +19,13 @@ const debugEnabled = inject("debug-enabled");
 
 // The query filters (from the search params / query string)
 // made into reactive objects.
-const { grouping, stickies, original } = useQueryFilters({
+const {
+  grouping,
+  stickies,
+  changedStickies,
+  original,
+  rendered: renderedConditions,
+} = useQueryFilters({
   createDefault: true,
   optionsSchema: filterSchema,
 });
@@ -28,34 +34,6 @@ const matchOptions = [
   { value: "and", label: "All of" },
   { value: "or", label: "Any of" },
 ];
-
-// Computes an array of sticky conditions that have been changed from their default.
-const changedStickies = computed(() => {
-  const nonDefaultStickies = [];
-  if (stickies.value.length > 0) {
-    for (const c of stickies.value) {
-      const stickyDefault = filterSchema.filters[c.identifier].sticky_default;
-      if (
-        c.relative !== stickyDefault[1]["lookup"] ||
-        c.value !== stickyDefault[1]["value"]
-      ) {
-        nonDefaultStickies.push(c);
-      }
-    }
-  }
-  return nonDefaultStickies;
-});
-
-// Computes the query into the end result for form submission.
-const renderedQueryFilters = computed(() => {
-  const q = grouping.toObject();
-  // Prepend the sticky conditions.
-  // This is so they will be popped off correctly when read again from this component, etc.
-  for (const c of changedStickies.value.toReversed()) {
-    q[1].unshift(c.toObject());
-  }
-  return JSON.stringify(q);
-});
 
 const cancelHandler = () => {
   let url = indexUrl;
@@ -97,7 +75,7 @@ const submitHandler = async (e) => {
   <div class="container">
     <form method="post" @submit="submitHandler">
       <input type="hidden" name="csrfmiddlewaretoken" :value="csrftoken" />
-      <input type="hidden" name="q" :value="renderedQueryFilters" />
+      <input type="hidden" name="q" :value="renderedConditions" />
       <!-- The first row defines the top-level operator to use -->
       <div class="row">
         <div class="col">

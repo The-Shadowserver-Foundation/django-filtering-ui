@@ -7,7 +7,14 @@ import useQueryFilters from "@/composables/useQueryFilters";
 import { operatorToLabel } from "@/utils/lookupMapping";
 
 const filterSchema = inject("filtering-options-schema");
-const { grouping, stickies } = useQueryFilters({ optionsSchema: filterSchema });
+const {
+  grouping,
+  stickies,
+  changedStickies,
+  rendered: renderedConditions,
+} = useQueryFilters({
+  optionsSchema: filterSchema,
+});
 // FIXME The structure of this content changed,
 //       but the underlying code has yet to be changed.
 const revisedFilterSchema = Object.entries(filterSchema.filters).map(
@@ -16,33 +23,6 @@ const revisedFilterSchema = Object.entries(filterSchema.filters).map(
 const rootOperatorLabel = grouping ? operatorToLabel(grouping.operation) : null;
 const hasConditions = computed(() => grouping || stickies.value);
 
-const changedStickies = computed(() => {
-  const nonDefaultStickies = [];
-  if (stickies.value.length > 0) {
-    for (const c of stickies.value) {
-      const stickyDefault = filterSchema.filters[c.identifier].sticky_default;
-      if (
-        c.relative !== stickyDefault[1]["lookup"] ||
-        c.value !== stickyDefault[1]["value"]
-      ) {
-        nonDefaultStickies.push(c);
-      }
-    }
-  }
-  return nonDefaultStickies;
-});
-
-// Computes the query into the end result for form submission.
-const renderedQueryFilters = computed(() => {
-  const q = grouping.toObject();
-  // Prepend the sticky conditions.
-  // This is so they will be popped off correctly when read again from this component, etc.
-  for (const c of changedStickies.value.toReversed()) {
-    q[1].unshift(c.toObject());
-  }
-  return JSON.stringify(q);
-});
-
 const pushLocation = () => {
   // Build new url with updated query data
   const url = new URL(window.location);
@@ -50,7 +30,7 @@ const pushLocation = () => {
   if (grouping.conditions.length == 0 && changedStickies.value.length == 0) {
     url.searchParams.delete("q");
   } else {
-    url.searchParams.set("q", renderedQueryFilters.value);
+    url.searchParams.set("q", renderedConditions.value);
   }
   window.location.assign(url);
 };

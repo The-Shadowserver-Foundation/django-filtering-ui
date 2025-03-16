@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { Condition, Grouping } from "@/utils/query";
 
 import useSearchParams from "./useSearchParams";
@@ -86,5 +86,33 @@ export default (options = {}) => {
   }
   stickies = ref(stickies);
 
-  return { grouping, stickies, original };
+  const changedStickies = computed(() => {
+    const nonDefaultStickies = [];
+    if (stickies.value.length > 0) {
+      for (const c of stickies.value) {
+        const stickyDefault =
+          optionsSchema.filters[c.identifier].sticky_default;
+        if (
+          c.relative !== stickyDefault[1]["lookup"] ||
+          c.value !== stickyDefault[1]["value"]
+        ) {
+          nonDefaultStickies.push(c);
+        }
+      }
+    }
+    return nonDefaultStickies;
+  });
+
+  // Computes the query into the end result for form submission.
+  const rendered = computed(() => {
+    const q = grouping.toObject();
+    // Prepend the sticky conditions.
+    // This is so they will be popped off correctly when read again from this component, etc.
+    for (const c of changedStickies.value.toReversed()) {
+      q[1].unshift(c.toObject());
+    }
+    return JSON.stringify(q);
+  });
+
+  return { grouping, stickies, changedStickies, original, rendered };
 };

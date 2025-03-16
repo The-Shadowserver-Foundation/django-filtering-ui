@@ -1,9 +1,13 @@
 import { mockWindowLocation } from "@/testing";
 import useQueryFilters from "./useQueryFilters";
-import { Grouping } from "@/utils/query";
-import { exampleSchemaOne, exampleSchemaThree } from "@/testing/data";
+import { Condition, Grouping } from "@/utils/query";
+import {
+  exampleSchemaOne,
+  exampleSchemaThree,
+  exampleSchemaFour,
+} from "@/testing/data";
 
-describe("tests for useQueryFilters", () => {
+describe("tests useQueryFilters parses to reactive objects", () => {
   beforeEach(async () => {
     mockWindowLocation();
   });
@@ -11,7 +15,7 @@ describe("tests for useQueryFilters", () => {
   test("successfully uses query filters data", () => {
     const qValue = ["and", [["name", { lookup: "icontains", value: "bar" }]]];
     const q = Grouping.fromObject(qValue);
-    window.location.search = `?q=${JSON.stringify(qValue)}`;
+    window.location.assign(`?q=${JSON.stringify(qValue)}`);
 
     const { grouping, original } = useQueryFilters({
       optionsSchema: exampleSchemaOne,
@@ -125,5 +129,88 @@ describe("tests for useQueryFilters", () => {
 
     expect(consoleErrorSpy).toHaveBeenCalled();
     expect(consoleErrorSpy.mock.calls[0]).toContain("Error parsing JSON:");
+  });
+});
+
+describe("tests useQueryFilters computed properties", () => {
+  beforeEach(async () => {
+    mockWindowLocation();
+  });
+
+  test("changedStickies contains only stickies that have changed", () => {
+    const stickyCondition = ["brand", { lookup: "exact", value: "Delta" }];
+    const qValue = [
+      "and",
+      [stickyCondition, ["name", { lookup: "icontains", value: "bar" }]],
+    ];
+    // Initialize the data
+    const q = Grouping.fromObject(qValue);
+    window.location.assign(`?q=${JSON.stringify(qValue)}`);
+
+    // Target
+    const { grouping, stickies, changedStickies } = useQueryFilters({
+      optionsSchema: exampleSchemaFour,
+    });
+
+    // Check for initial representation of data
+    expect(grouping.conditions.length).toEqual(1);
+    expect(stickies.value.map((x) => x.identifier)).toEqual([
+      "brand",
+      "category",
+    ]);
+    // Check for the initially changed stick condition
+    expect(changedStickies.value.length).toEqual(1);
+    expect(changedStickies.value[0].identifier).toEqual(stickyCondition[0]);
+    expect(changedStickies.value[0].relative).toEqual(
+      stickyCondition[1].lookup,
+    );
+    expect(changedStickies.value[0].value).toEqual(stickyCondition[1].value);
+
+    // Similuate a modification to the stickies reactively updates computed property
+    stickies.value.push(new Condition("category", "exact", "Patio"));
+    expect(changedStickies.value.length).toEqual(2);
+    expect(changedStickies.value.map((x) => x.identifier)).toEqual([
+      "brand",
+      "category",
+    ]);
+  });
+
+  test("rendered contains both grouping and changed stickies", () => {
+    const stickyCondition = ["brand", { lookup: "exact", value: "Delta" }];
+    const qValue = [
+      "and",
+      [stickyCondition, ["name", { lookup: "icontains", value: "bar" }]],
+    ];
+    // Initialize the data
+    const q = Grouping.fromObject(qValue);
+    window.location.assign(`?q=${JSON.stringify(qValue)}`);
+
+    // Target
+    const { grouping, stickies, rendered, original } = useQueryFilters({
+      optionsSchema: exampleSchemaFour,
+    });
+
+    // Check for initial representation of data
+    expect(grouping.conditions.length).toEqual(1);
+    expect(stickies.value.map((x) => x.identifier)).toEqual([
+      "brand",
+      "category",
+    ]);
+    // Check initially that rendered is equal to the original
+    expect(rendered.value).toEqual(JSON.stringify(original));
+
+    // Similuate a modification to the stickies and grouping
+    stickies.value.push(new Condition("category", "exact", "Patio"));
+    grouping.conditions.push(new Condition("name", "icontains", "prep"));
+    const [operation, conditions] = JSON.parse(rendered.value);
+    expect(operation).toEqual(qValue[0]);
+    // Check the modification reactively updates computed property
+    expect(conditions.length).toEqual(4);
+    expect(conditions.map((x) => x[0])).toEqual([
+      "brand",
+      "category",
+      "name",
+      "name",
+    ]);
   });
 });
