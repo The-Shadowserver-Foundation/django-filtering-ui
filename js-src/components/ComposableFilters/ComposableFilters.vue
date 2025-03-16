@@ -129,7 +129,7 @@ const submitHandler = async (e) => {
     <hr />
     <DebugDataDisplay
       name="Query Filters data"
-      :data="grouping.toObject()"
+      :data="JSON.parse(renderedConditions)"
       :expanded="true"
     />
     <DebugDataDisplay name="Options Schema" :data="filterSchema" />
