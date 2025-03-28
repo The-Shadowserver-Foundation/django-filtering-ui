@@ -119,10 +119,10 @@ export const exampleSchemaFour = {
       lookups: {
         exact: {
           choices: [
-            ("all", "All brands"),
-            ("Delta", "Delta"),
-            ("MOEN", "MOEN"),
-            ("Glacier Bay", "Glacier Bay"),
+            ["all", "All brands"],
+            ["Delta", "Delta"],
+            ["MOEN", "MOEN"],
+            ["Glacier Bay", "Glacier Bay"],
           ],
           label: "is",
           type: "choice",
@@ -137,9 +137,9 @@ export const exampleSchemaFour = {
       lookups: {
         exact: {
           choices: [
-            ("Bath", "Bath"),
-            ("Kitchen", "Kitchen"),
-            ("Patio", "Patio"),
+            ["Bath", "Bath"],
+            ["Kitchen", "Kitchen"],
+            ["Patio", "Patio"],
           ],
           label: "equals",
           type: "choice",
