@@ -75,7 +75,7 @@ class TestDjangoFilteringUi:
     def test_default_use(self):
         entrypoint_name = 'filtering'
         context = {
-            'index_url': '$$$index$$$',
+            'listing_url': '$$$listing$$$',
             'filtering_options_schema': '$$$filtering_options_schema$$$',
             'filtering_json_schema': '$$$filtering_json_schema$$$',
         }
@@ -88,7 +88,7 @@ class TestDjangoFilteringUi:
         )
         rendered = tmplt.render(Context(context))
         assert 'src="/static/django-filtering-ui/filtering.js"' in rendered
-        assert 'vueProvided["model-index-url"] = "$$$index$$$";' in rendered
+        assert 'vueProvided["model-listing-url"] = "$$$listing$$$";' in rendered
         assert 'vueProvided["filtering-options-schema"] = $$$filtering_options_schema$$$;' in rendered
         assert 'vueProvided["filtering-json-schema"] = $$$filtering_json_schema$$$;' in rendered
         assert 'vueProvided["debug-enabled"] = false;' in rendered
@@ -97,7 +97,7 @@ class TestDjangoFilteringUi:
         entrypoint_name = 'bogus'
         context = {
             'entrypoint': entrypoint_name,
-            'index_url': '$$$index$$$',
+            'listing_url': '$$$listing$$$',
             'filtering_options_schema': '$$$filtering_options_schema$$$',
             'filtering_json_schema': '$$$filtering_json_schema$$$',
         }

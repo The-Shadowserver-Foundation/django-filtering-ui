@@ -5,7 +5,7 @@ import { exampleSchemaOne } from "./data";
 export const defaultComposableFiltersMountOptions = {
   global: {
     provide: {
-      "model-index-url": "https://example.com",
+      "model-listing-url": "https://example.com",
       "filtering-options-schema": exampleSchemaOne,
       // Not currently in use, but injected.
       "filtering-json-schema": {},

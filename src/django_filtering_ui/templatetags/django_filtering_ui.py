@@ -67,7 +67,7 @@ def django_filtering_ui(context):
 
     Needed context is:
         - 'entrypoint' - either 'listing' or 'filtering'
-        - 'index_url' - a url to the listing page
+        - 'listing_url' - a url to the listing page
         - 'filtering_options_schema' - the options schema
         - 'filtering_json_schema' - the jsonschema
 
@@ -79,7 +79,7 @@ def django_filtering_ui(context):
     entrypoint_name = f"{ep}.js"
     local_context = {
         'entrypoint': entrypoint_name,
-        'index_url': context['index_url'],
+        'listing_url': context['listing_url'],
         'filtering_options_schema': context['filtering_options_schema'],
         'filtering_json_schema': context['filtering_json_schema'],
         'DEBUG': "true" if settings.DEBUG else "false",  # js true/false value

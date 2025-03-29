@@ -12,7 +12,7 @@ import useQueryFilters from "@/composables/useQueryFilters";
 import { Condition, Grouping } from "@/utils/query";
 
 const csrftoken = useCsrfToken();
-const indexUrl = inject("model-index-url");
+const listingUrl = inject("model-listing-url");
 const filterSchema = inject("filtering-options-schema");
 const filteringJSONSchema = inject("filtering-json-schema");
 const debugEnabled = inject("debug-enabled");
@@ -36,13 +36,13 @@ const matchOptions = [
 ];
 
 const cancelHandler = () => {
-  let url = indexUrl;
+  let url = listingUrl;
   if (original) url += `?q=${JSON.stringify(original)}`;
   window.location.assign(url);
 };
 
 const submitHandler = async (e) => {
-  let url = indexUrl;
+  let url = listingUrl;
   const conditions = [];
   // Remove obviously incomplete rows
   for (const condition of grouping.conditions) {

@@ -109,11 +109,11 @@ describe("Tests ComposableFilters behavior", () => {
   });
 
   test("cancel returns user to listing page", async (context) => {
-    const indexUrl = "/listing";
+    const listingUrl = "/listing";
     const mountOptions = {
       global: {
         provide: {
-          "model-index-url": indexUrl,
+          "model-listing-url": listingUrl,
         },
       },
     };
@@ -122,18 +122,18 @@ describe("Tests ComposableFilters behavior", () => {
     const cancelButton = wrapper.get(".cancel");
     await cancelButton.trigger("click");
 
-    expect(window.location.href).toEqual(indexUrl);
+    expect(window.location.href).toEqual(listingUrl);
   });
 
   test("editing filters then cancel returns user to listing page with previous filters", async (context) => {
-    const indexUrl = "/listing";
+    const listingUrl = "/listing";
     const qValue = exampleQValueOne;
     context.assignQ(qValue);
 
     const wrapper = mountTarget({
       global: {
         provide: {
-          "model-index-url": indexUrl,
+          "model-listing-url": listingUrl,
         },
       },
     });
@@ -146,17 +146,17 @@ describe("Tests ComposableFilters behavior", () => {
     const cancelButton = wrapper.get(".cancel");
     await cancelButton.trigger("click");
 
-    // Check the url has been to the index url and the q value remains the same.
-    expect(window.location.href).toEqual(indexUrl);
+    // Check the url has been to the listing url and the q value remains the same.
+    expect(window.location.href).toEqual(listingUrl);
     expect(window.location.search.get("q")).toEqual(JSON.stringify(qValue));
   });
 
   test("empty filters submitted, cancels form submission and redirects", async (context) => {
-    const indexUrl = "/listing";
+    const listingUrl = "/listing";
     const wrapper = mountTarget({
       global: {
         provide: {
-          "model-index-url": indexUrl,
+          "model-listing-url": listingUrl,
         },
       },
     });
@@ -167,17 +167,17 @@ describe("Tests ComposableFilters behavior", () => {
     // Submit the form
     await wrapper.get("form").trigger("submit");
 
-    // Check the url has been to the index url and the q value remains the same.
-    expect(window.location.href).toEqual(indexUrl);
+    // Check the url has been to the listing url and the q value remains the same.
+    expect(window.location.href).toEqual(listingUrl);
     expect(window.location.search.get("q")).toBe(null);
   });
 
   test("dropping null row(s) on submit", async (context) => {
-    const indexUrl = "/listing";
+    const listingUrl = "/listing";
     const qValue = Array.from(exampleQValueOne);
     context.assignQ(qValue);
     const wrapper = mountTarget({
-      global: { provide: { "model-index-url": indexUrl } },
+      global: { provide: { "model-listing-url": listingUrl } },
     });
 
     // Add a new row, but do not fill it out.
@@ -201,11 +201,11 @@ describe("Tests ComposableFilters behavior", () => {
   test("dropping incomplete row(s) on submit", async (context) => {
     // FIXME This test has been written to work around the lack of black input
     //       validation reporting. Instead we simply drop the row for simplicity.
-    const indexUrl = "/listing";
+    const listingUrl = "/listing";
     const qValue = Array.from(exampleQValueOne);
     context.assignQ(qValue);
     const wrapper = mountTarget({
-      global: { provide: { "model-index-url": indexUrl } },
+      global: { provide: { "model-listing-url": listingUrl } },
     });
 
     // Add a new row, but do not fill it out.
@@ -222,13 +222,13 @@ describe("Tests ComposableFilters behavior", () => {
   test.todo("stop submission on row error", () => {});
 
   test("sticky condition appears but does not submit with default value", async (context) => {
-    const indexUrl = "/listing";
+    const listingUrl = "/listing";
     const stickyDefault = exampleSchemaThree.filters.type.sticky_default;
 
     const wrapper = mountTarget({
       global: {
         provide: {
-          "model-index-url": indexUrl,
+          "model-listing-url": listingUrl,
           "filtering-options-schema": exampleSchemaThree,
         },
       },
@@ -259,19 +259,19 @@ describe("Tests ComposableFilters behavior", () => {
 
     // Check the form submission cancelled,
     // due no new conditions or changes to the sticky condition.
-    // Check the url has been to the index url and the q value remains the same.
-    expect(window.location.href).toEqual(indexUrl);
+    // Check the url has been to the listing url and the q value remains the same.
+    expect(window.location.href).toEqual(listingUrl);
     expect(window.location.search.get("q")).toBe(null);
   });
 
   test("sticky condition submits with edited value", async (context) => {
-    const indexUrl = "/listing";
+    const listingUrl = "/listing";
     const stickyDefault = exampleSchemaThree.filters.type.sticky_default;
 
     const wrapper = mountTarget({
       global: {
         provide: {
-          "model-index-url": indexUrl,
+          "model-listing-url": listingUrl,
           "filtering-options-schema": exampleSchemaThree,
         },
       },
