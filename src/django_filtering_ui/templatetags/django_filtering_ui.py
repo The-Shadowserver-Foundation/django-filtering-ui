@@ -2,6 +2,7 @@ from typing import Any
 from urllib.parse import urljoin
 
 from django import template
+from django.conf import settings
 from django.templatetags.static import static
 from django.utils.html import mark_safe
 from django.utils.safestring import SafeString
@@ -53,3 +54,34 @@ def vue_provide(key: str, value: Any, quote: bool = True) -> SafeString:
         "<script>window.vueProvided = window.vueProvided || "
         f'{{}}; vueProvided["{key}"] = {q}{value}{q};</script>'
     )
+
+@register.inclusion_tag("django_filtering_ui/inclusion.html", takes_context=True)
+def django_filtering_ui(context):
+    """
+    This template tag encapsulates the entrypoint and vue provides
+    templating into a single call.
+
+    Renders all the tags needed for the given ``entrypoint``
+    This will include the ``<script>`` tag for the entrypoint
+    and any supporting vue provides.
+
+    Needed context is:
+        - 'entrypoint' - either 'listing' or 'filtering'
+        - 'index_url' - a url to the listing page
+        - 'filtering_options_schema' - the options schema
+        - 'filtering_json_schema' - the jsonschema
+
+    """
+    ep = context.get('entrypoint')
+    if ep not in ('filtering', 'listing'):
+        raise ValueError(f"Invalid 'entrypoint' value:  {ep}")
+
+    entrypoint_name = f"{ep}.js"
+    local_context = {
+        'entrypoint': entrypoint_name,
+        'index_url': context['index_url'],
+        'filtering_options_schema': context['filtering_options_schema'],
+        'filtering_json_schema': context['filtering_json_schema'],
+        'DEBUG': "true" if settings.DEBUG else "false",  # js true/false value
+    }
+    return local_context

@@ -1,11 +1,18 @@
 from urllib.parse import urljoin
+
+import pytest
+from django.template import Template, Context
 from django.templatetags.static import static
 from django_filtering_ui.conf import (
     DJANGO_FILTERING_UI_DEV_PATH,
     DJANGO_FILTERING_UI_DEV_URL,
 )
 
-from django_filtering_ui.templatetags.django_filtering_ui import entrypoint, vue_provide
+from django_filtering_ui.templatetags.django_filtering_ui import (
+    django_filtering_ui,
+    entrypoint,
+    vue_provide,
+)
 
 
 class TestEntrypoint:
@@ -58,3 +65,44 @@ class TestVueProvide:
             f'vueProvided["{key}"] = {value};</script>'
         )
         assert rendered.strip() == expected_result
+
+
+class TestDjangoFilteringUi:
+    """
+    Tests the ``django_filtering_ui`` templatetag.
+    """
+
+    def test_default_use(self):
+        entrypoint_name = 'filtering'
+        context = {
+            'index_url': '$$$index$$$',
+            'filtering_options_schema': '$$$filtering_options_schema$$$',
+            'filtering_json_schema': '$$$filtering_json_schema$$$',
+        }
+
+        tmplt = Template(
+            "{% load django_filtering_ui from django_filtering_ui %}"
+            f"{{% with entrypoint='{entrypoint_name}' %}}"
+            "{% django_filtering_ui %}"
+            "{% endwith %}"
+        )
+        rendered = tmplt.render(Context(context))
+        assert 'src="/static/django-filtering-ui/filtering.js"' in rendered
+        assert 'vueProvided["model-index-url"] = "$$$index$$$";' in rendered
+        assert 'vueProvided["filtering-options-schema"] = $$$filtering_options_schema$$$;' in rendered
+        assert 'vueProvided["filtering-json-schema"] = $$$filtering_json_schema$$$;' in rendered
+        assert 'vueProvided["debug-enabled"] = false;' in rendered
+
+    def test_invalid_use(self):
+        entrypoint_name = 'bogus'
+        context = {
+            'entrypoint': entrypoint_name,
+            'index_url': '$$$index$$$',
+            'filtering_options_schema': '$$$filtering_options_schema$$$',
+            'filtering_json_schema': '$$$filtering_json_schema$$$',
+        }
+
+        with pytest.raises(ValueError) as caught:
+            django_filtering_ui(context)
+
+        assert "Invalid 'entrypoint' value" in caught.value.args[0]
