@@ -79,6 +79,7 @@ def django_filtering_ui(context):
     entrypoint_name = f"{ep}.js"
     local_context = {
         'entrypoint': entrypoint_name,
+        'filtering_url': context['filtering_url'],
         'listing_url': context['listing_url'],
         'filtering_options_schema': context['filtering_options_schema'],
         'filtering_json_schema': context['filtering_json_schema'],
