@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import Listing from "./Listing.vue";
 
 import { mockWindowLocation } from "@/testing";
@@ -5,6 +6,7 @@ import {
   exampleQValueOne,
   exampleSchemaTwo,
   exampleSchemaThree,
+  exampleSchemaFour,
 } from "@/testing/data";
 import {
   defaultComposableFiltersMountOptions,
@@ -44,6 +46,18 @@ describe("testing high-level lozenge interface rendering", () => {
       expect(loz.get(".relative").attributes("data-value")).toBe(lookup);
       expect(loz.get(".value").attributes("data-value")).toBe(value);
     }
+
+    // Renders the underlying form used to convey changes
+    const form = wrapper.get("form");
+    expect(form.attributes("method")).toEqual("post");
+    expect(form.attributes("action")).toEqual(
+      defaultComposableFiltersMountOptions.global.provide[
+        "model-filtering-url"
+      ],
+    );
+    expect(JSON.parse(form.get('input[name="q"]').element.value)).toEqual(
+      exampleQValueOne,
+    );
   });
 
   test("renders with a choice type lookup", () => {
@@ -66,7 +80,8 @@ describe("testing high-level lozenge interface rendering", () => {
     }
   });
 
-  test("removal of lozenge removes q from url", async () => {
+  test("removal of all conditions submits no conditions", async () => {
+    // In this case, we let the serverside form logic strip the q completely from the request.
     const qValue = ["or", [["type", { lookup: "exact", value: "tool" }]]];
     assignQ(qValue);
     const wrapper = mountTarget({
@@ -78,8 +93,50 @@ describe("testing high-level lozenge interface rendering", () => {
     const loz = lozenges[0];
 
     await loz.get("a.clear").trigger("click");
-    // Check the url has been updated
-    expect(window.location.search.get("q")).toEqual(null);
+
+    // Check form submission value
+    const qInput = wrapper.get("form").get('input[name="q"]');
+    // Expect the q to contain no conditions
+    const expectedQSubmission = ["or", []];
+    expect(JSON.parse(qInput.element.value)).toEqual(expectedQSubmission);
+  });
+
+  test("removal of condition submits query data", async () => {
+    const qValue = [
+      "or",
+      [
+        ["name", { lookup: "icontains", value: "eco" }],
+        ["name", { lookup: "icontains", value: "green" }],
+      ],
+    ];
+    assignQ(qValue);
+    const wrapper = mountTarget({
+      global: { provide: { "filtering-options-schema": exampleSchemaFour } },
+    });
+
+    // Attach an event listener to the form's submit event,
+    // so that we ensure the submit event triggers.
+    const form = wrapper.get("form");
+    const submitListener = vi.fn();
+    form.element.addEventListener("submit", submitListener);
+
+    // Look for the lozenges (2 sticky + 2 from the user supplied conditions)
+    const lozenges = wrapper.findAllComponents({ name: "Lozenge" });
+    expect(lozenges.length).toEqual(2 + qValue[1].length);
+    // Look at the first user input lozenge (note, the 2 sticky lozenges before it).
+    const loz = lozenges[2];
+
+    // Trigger the removal of the lozenge
+    await loz.get("a.clear").trigger("click");
+
+    // Check form submission event triggered
+    expect(submitListener).toHaveBeenCalled();
+
+    // Check form submission value
+    const qInput = form.get('input[name="q"]');
+    // Expect the q value to have dropped the removed lozenge's data.
+    const expectedQSubmission = ["or", [qValue[1][1]]];
+    expect(JSON.parse(qInput.element.value)).toEqual(expectedQSubmission);
   });
 
   test("renders with a default sticky condition", () => {
@@ -173,10 +230,11 @@ describe("testing high-level lozenge interface rendering", () => {
     expect(loz.vm.condition.identifier).toEqual("type");
     // Reset the sticky condition
     await loz.find("a.clear").trigger("click");
-    // Check the url has been updated
-    const expectedQValue = [qValue[0], [qValue[1][1]]];
-    expect(window.location.search.get("q")).toEqual(
-      JSON.stringify(expectedQValue),
-    );
+
+    // Check form submission value
+    const qInput = wrapper.get("form").get('input[name="q"]');
+    // Expect the q to contain only the remaining condition
+    const expectedQSubmission = ["or", [qValue[1][1]]];
+    expect(JSON.parse(qInput.element.value)).toEqual(expectedQSubmission);
   });
 });

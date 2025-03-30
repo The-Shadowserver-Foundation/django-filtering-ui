@@ -1,12 +1,19 @@
 <script setup>
 import "@/app.css";
 
-import { computed, inject } from "vue";
+import { computed, inject, nextTick, useTemplateRef } from "vue";
 import Lozenge from "@/components/Lozenge.vue";
+import useCsrfToken from "@/composables/useCsrfToken";
 import useQueryFilters from "@/composables/useQueryFilters";
 import { operatorToLabel } from "@/utils/lookupMapping";
 
+const csrftoken = useCsrfToken();
 const filterSchema = inject("filtering-options-schema");
+const listingUrl = inject("model-listing-url");
+const filteringUrl = inject("model-filtering-url");
+
+const filteringForm = useTemplateRef("filteringForm");
+
 const {
   grouping,
   stickies,
@@ -23,22 +30,16 @@ const revisedFilterSchema = Object.entries(filterSchema.filters).map(
 const rootOperatorLabel = grouping ? operatorToLabel(grouping.operation) : null;
 const hasConditions = computed(() => grouping || stickies.value);
 
-const pushLocation = () => {
-  // Build new url with updated query data
-  const url = new URL(window.location);
-  // Check if all conditions have been removed
-  if (grouping.conditions.length == 0 && changedStickies.value.length == 0) {
-    url.searchParams.delete("q");
-  } else {
-    url.searchParams.set("q", renderedConditions.value);
-  }
-  window.location.assign(url);
+const submitChange = () => {
+  // Await next update before submitting the form.
+  // This allows the DOM to update before dispatching the event from the browser.
+  nextTick(() => filteringForm.value.dispatchEvent(new Event("submit")));
 };
 
 const handleLozengeRemove = (condition) => {
   // Remove the condition from the query filters
   grouping.removeConditions(condition);
-  pushLocation();
+  submitChange();
 };
 
 const handleStickyReset = (c) => {
@@ -48,12 +49,16 @@ const handleStickyReset = (c) => {
     filterSchema.filters[c.identifier].sticky_default;
   stickies.value[idx].lookup = lookup;
   stickies.value[idx].value = value;
-  pushLocation();
+  submitChange();
 };
 </script>
 
 <template>
   <div class="filter-container" v-if="hasConditions">
+    <form ref="filteringForm" method="post" :action="filteringUrl">
+      <input type="hidden" name="csrfmiddlewaretoken" :value="csrftoken" />
+      <input type="hidden" name="q" :value="renderedConditions" />
+    </form>
     <span class="preamble"> Results match {{ rootOperatorLabel }} of: </span>
     <Lozenge
       v-for="condition in stickies"
@@ -86,6 +91,9 @@ const handleStickyReset = (c) => {
     border-radius: 10px;
     margin: 0 2px;
     position: relative;
+  }
+  form {
+    display: none;
   }
 }
 </style>
