@@ -77,11 +77,13 @@ export default (options = {}) => {
       grouping.addConditions(new Condition());
     }
     original = jsonData;
-  } else if (options.createDefault) {
-    // Create a default when the source query filter data doesn't exist.
-    grouping = new Grouping("and", [new Condition()]);
-    stickies = getAllStickyDefaults(optionsSchema);
   } else {
+    if (options.createDefault) {
+      // Create a default when the source query filter data doesn't exist.
+      grouping = new Grouping("and", [new Condition()]);
+    } else {
+      grouping = new Grouping("and");
+    }
     stickies = getAllStickyDefaults(optionsSchema);
   }
   stickies = ref(stickies);

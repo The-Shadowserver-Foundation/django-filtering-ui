@@ -34,8 +34,9 @@ describe("tests useQueryFilters parses to reactive objects", () => {
       optionsSchema: exampleSchemaOne,
     });
 
-    // Check for a null value
-    expect(grouping).toEqual(null);
+    // Check for a blank grouping
+    expect(grouping.operation).toEqual("and");
+    expect(grouping.conditions.length).toEqual(0);
     // Check the originalData is equal to the query string value
     expect(original).toEqual(null);
   });
@@ -68,8 +69,9 @@ describe("tests useQueryFilters parses to reactive objects", () => {
       optionsSchema: exampleSchemaThree,
     });
 
-    // Check for no grouping data
-    expect(grouping).toBe(null);
+    // Check for a blank grouping
+    expect(grouping.operation).toEqual("and");
+    expect(grouping.conditions.length).toEqual(0);
     // Check for the creation of the default sticky condition
     expect(stickies.value.length).toEqual(1);
     const typeStickyDefault = exampleSchemaThree.filters.type.sticky_default;
