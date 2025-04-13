@@ -20,7 +20,7 @@ classifiers = [
   "Framework :: Django :: 4",
   "Framework :: Django :: 5",
 ]
-dependencies = ["django-filtering>=0.0.3"]
+dependencies = ["django-filtering>=0.0.7"]
 
 [project.optional-dependencies]
 tests = ["pytest", "pytest-django", "ipdb", "model_bakery"]
