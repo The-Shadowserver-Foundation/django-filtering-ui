@@ -34,7 +34,10 @@ artifacts = ["src/django_filtering_ui/static/django-filtering-ui"]
 exclude = [".*/*"]
 
 [tool.hatch.build.targets.wheel]
-artifacts = ["src/django_filtering_ui/static/django-filtering-ui"]
+artifacts = [
+  "src/django_filtering_ui/static/django-filtering-ui",
+  "src/django_filtering_ui/templates/django_filtering_ui",
+]
 only-packages = true
 
 [tool.pytest.ini_options]
