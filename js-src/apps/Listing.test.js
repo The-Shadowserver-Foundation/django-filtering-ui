@@ -27,6 +27,13 @@ describe("testing high-level lozenge interface rendering", () => {
     mockWindowLocation();
   });
 
+  test("renders without a query", () => {
+    const wrapper = mountTarget();
+
+    // Check the preamble text "Results match ..."
+    expect(wrapper.find(".preamble").exists()).toBe(false);
+  });
+
   test("renders a simple query", () => {
     assignQ(exampleQValueOne);
     const wrapper = mountTarget();
@@ -94,11 +101,8 @@ describe("testing high-level lozenge interface rendering", () => {
 
     await loz.get("a.clear").trigger("click");
 
-    // Check form submission value
-    const qInput = wrapper.get("form").get('input[name="q"]');
-    // Expect the q to contain no conditions
-    const expectedQSubmission = ["or", []];
-    expect(JSON.parse(qInput.element.value)).toEqual(expectedQSubmission);
+    // Check outer container is no longer present.
+    expect(wrapper.find(".filter-container").exists()).toBe(false);
   });
 
   test("removal of condition submits query data", async () => {

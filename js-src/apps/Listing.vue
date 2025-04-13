@@ -28,12 +28,18 @@ const revisedFilterSchema = Object.entries(filterSchema.filters).map(
   ([k, v]) => ({ name: k, ...v }),
 );
 const rootOperatorLabel = grouping ? operatorToLabel(grouping.operation) : null;
-const hasConditions = computed(() => grouping || stickies.value);
+const hasConditions = computed(() =>
+  Boolean(grouping.conditions.length || stickies.value.length),
+);
 
 const submitChange = () => {
   // Await next update before submitting the form.
   // This allows the DOM to update before dispatching the event from the browser.
-  nextTick(() => filteringForm.value.dispatchEvent(new Event("submit")));
+  nextTick(() => {
+    if (filteringForm.value instanceof HTMLElement) {
+      filteringForm.value.dispatchEvent(new Event("submit"));
+    }
+  });
 };
 
 const handleLozengeRemove = (condition) => {
