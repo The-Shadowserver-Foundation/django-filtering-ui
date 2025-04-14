@@ -84,9 +84,10 @@ Then open `chrome://inspect` and `0.0.0.0:9223` as a network target.
 At this time the package is built as follows:
 
     # Builds the js source and outputs it into src/django_filtering_ui/static
-    npm run build
+    docker exec django-filtering-ui--frontend npm run build
     # Build the python package files
-    hatchling build
+    docker exec django-filtering-ui--backend pip install hatchling
+    docker exec django-filtering-ui--backend hatchling build
 
 ## License
 
