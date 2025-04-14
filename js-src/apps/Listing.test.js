@@ -99,8 +99,17 @@ describe("testing high-level lozenge interface rendering", () => {
     expect(lozenges.length).toEqual(qValue[1].length);
     const loz = lozenges[0];
 
+    // Attach an event listener to the form's submit event,
+    // so that we ensure the submit event triggers.
+    const form = wrapper.get("form");
+    const submitListener = vi.fn();
+    form.element.addEventListener("submit", submitListener);
+
+    // Target action
     await loz.get("a.clear").trigger("click");
 
+    // Check form submission event triggered
+    expect(submitListener).toHaveBeenCalled();
     // Check outer container is no longer present.
     expect(wrapper.find(".filter-container").exists()).toBe(false);
   });

@@ -35,11 +35,7 @@ const hasConditions = computed(() =>
 const submitChange = () => {
   // Await next update before submitting the form.
   // This allows the DOM to update before dispatching the event from the browser.
-  nextTick(() => {
-    if (filteringForm.value instanceof HTMLElement) {
-      filteringForm.value.dispatchEvent(new Event("submit"));
-    }
-  });
+  nextTick(() => filteringForm.value.dispatchEvent(new Event("submit")));
 };
 
 const handleLozengeRemove = (condition) => {
@@ -60,11 +56,11 @@ const handleStickyReset = (c) => {
 </script>
 
 <template>
+  <form ref="filteringForm" method="post" :action="filteringUrl">
+    <input type="hidden" name="csrfmiddlewaretoken" :value="csrftoken" />
+    <input type="hidden" name="q" :value="renderedConditions" />
+  </form>
   <div class="filter-container" v-if="hasConditions">
-    <form ref="filteringForm" method="post" :action="filteringUrl">
-      <input type="hidden" name="csrfmiddlewaretoken" :value="csrftoken" />
-      <input type="hidden" name="q" :value="renderedConditions" />
-    </form>
     <span class="preamble"> Results match {{ rootOperatorLabel }} of: </span>
     <Lozenge
       v-for="condition in stickies"
@@ -86,6 +82,9 @@ const handleStickyReset = (c) => {
 </template>
 
 <style scoped>
+form {
+  display: none;
+}
 .filter-container {
   display: flex;
   flex-direction: row;
@@ -97,9 +96,6 @@ const handleStickyReset = (c) => {
     border-radius: 10px;
     margin: 0 2px;
     position: relative;
-  }
-  form {
-    display: none;
   }
 }
 </style>
