@@ -3,6 +3,7 @@ from urllib.parse import urljoin
 import pytest
 from django.template import Template, Context
 from django.templatetags.static import static
+from django.utils.html import escapejs
 from django_filtering_ui.conf import (
     DJANGO_FILTERING_UI_DEV_PATH,
     DJANGO_FILTERING_UI_DEV_URL,
@@ -45,12 +46,12 @@ class TestVueProvide:
 
     def test_default_use(self):
         key = 'msg'
-        value = "testing message"
+        value = "testing message with \"quoted\" content"
         rendered = vue_provide(key, value)
 
         expected_result = (
             "<script>window.vueProvided = window.vueProvided || {}; "
-            f'vueProvided["{key}"] = "{value}";</script>'
+            f'vueProvided["{key}"] = "{escapejs(value)}";</script>'
         )
         assert rendered.strip() == expected_result
 

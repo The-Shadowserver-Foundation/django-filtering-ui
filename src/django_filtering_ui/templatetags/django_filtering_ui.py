@@ -4,7 +4,7 @@ from urllib.parse import urljoin
 from django import template
 from django.conf import settings
 from django.templatetags.static import static
-from django.utils.html import mark_safe
+from django.utils.html import escapejs, mark_safe
 from django.utils.safestring import SafeString
 
 from ..conf import get_dev_url, is_dev_enabled
@@ -49,7 +49,11 @@ def vue_provide(key: str, value: Any, quote: bool = True) -> SafeString:
 
     Be sure to set ``quote=False`` if supplying JSON encoded data.
     """
-    q = '"' if quote else ''
+    if quote:
+        value = escapejs(value)
+        q = '"'
+    else:
+        q = ''
     return mark_safe(
         "<script>window.vueProvided = window.vueProvided || "
         f'{{}}; vueProvided["{key}"] = {q}{value}{q};</script>'
