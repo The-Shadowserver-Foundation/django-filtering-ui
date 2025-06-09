@@ -1,12 +1,14 @@
 :root {
-    --ssf-primary-light: #fff;
-    --ssf-primary-dark: #000;
-    --ssf-primary: var(--ssf-primary-light);
-    --ssf-primary-inverse: var(--ssf-primary-dark);
-    --ssf-secondary: #ffc20e;
-    --ssf-secondary-shaded: rgba(255, 194, 14, 0.4);
-    --ssf-tertiary: #e07e26;
-    --ssf-tertiary-shaded: rgba(224, 126, 39, 0.2);
-    --ssf-shaded: #494948;
-    --ssf-shaded-more: #acacac;
+  --django-filtering-ui-primary-light: #fff;
+  --django-filtering-ui-primary-dark: #000;
+  --django-filtering-ui-primary: var(--django-filtering-ui-primary-light);
+  --django-filtering-ui-primary-inverse: var(
+    --django-filtering-ui-primary-dark
+  );
+  --django-filtering-ui-secondary: #ffc20e;
+  --django-filtering-ui-secondary-shaded: rgba(255, 194, 14, 0.4);
+  --django-filtering-ui-tertiary: #e07e26;
+  --django-filtering-ui-tertiary-shaded: rgba(224, 126, 39, 0.2);
+  --django-filtering-ui-shaded: #494948;
+  --django-filtering-ui-shaded-more: #acacac;
 }

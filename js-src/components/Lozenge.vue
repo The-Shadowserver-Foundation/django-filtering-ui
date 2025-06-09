@@ -62,8 +62,8 @@ const getChoiceLabel = () => {
   border-radius: 10px;
   margin: 0 2px;
   position: relative;
-  border: 1px solid var(--ssf-tertiary);
-  background-color: var(--ssf-tertiary-shaded);
+  border: 1px solid var(--django-filtering-ui-tertiary);
+  background-color: var(--django-filtering-ui-tertiary-shaded);
 }
 .filter-lozenge > .value {
   font-weight: bold;
@@ -82,13 +82,13 @@ const getChoiceLabel = () => {
 
 .filter-lozenge:has(.filter-relative.or) {
   .filter-relative {
-    color: var(--ssf-primary-inverse);
+    color: var(--django-filtering-ui-primary-inverse);
     top: 1.8rem;
   }
 }
 .filter-lozenge:has(.filter-relative.and) {
   .filter-relative {
-    color: var(--ssf-primary-inverse);
+    color: var(--django-filtering-ui-primary-inverse);
     top: 2rem;
   }
 }
