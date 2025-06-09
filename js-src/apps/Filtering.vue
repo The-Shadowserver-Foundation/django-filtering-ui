@@ -12,5 +12,10 @@ import ComposableFilters from "@/components/ComposableFilters";
   </main>
 </template>
 
-// Globally include bootstap grid
-<style src="bootstrap/dist/css/bootstrap-grid.min.css"></style>
+Include bootstap grid from this component downward using scoped style with
+vuejs' :deep pseudo-class.
+<style scoped lang="scss">
+.wrapper:deep() {
+  @import "bootstrap/scss/bootstrap-grid.scss";
+}
+</style>
