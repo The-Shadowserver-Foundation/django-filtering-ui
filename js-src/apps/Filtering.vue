@@ -4,12 +4,9 @@ import ComposableFilters from "@/components/ComposableFilters";
 </script>
 
 <template>
-  <h2>Advanced filters</h2>
-  <main>
-    <div class="wrapper">
-      <ComposableFilters />
-    </div>
-  </main>
+  <div class="wrapper">
+    <ComposableFilters />
+  </div>
 </template>
 
 Include bootstap grid from this component downward using scoped style with
