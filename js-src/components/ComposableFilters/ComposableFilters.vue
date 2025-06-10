@@ -95,6 +95,7 @@ const submitHandler = async (e) => {
         :key="condition.id"
         :condition
         :schema="filterSchema"
+        @add="grouping.addConditionsAfter(condition, new Condition())"
       />
       <!-- Mutable criteria rows -->
       <ConditionRow
@@ -102,19 +103,9 @@ const submitHandler = async (e) => {
         :key="condition.id"
         :condition
         :schema="filterSchema"
+        @add="grouping.addConditionsAfter(condition, new Condition())"
         @remove="grouping.removeConditions(condition)"
       />
-      <!-- Add row should always be present -->
-      <div class="row">
-        <div class="col actions">
-          <Button
-            id="add-condition"
-            class="btn btn-small"
-            @click="grouping.addConditions(new Condition())"
-            >+</Button
-          >
-        </div>
-      </div>
       <ul class="spaced">
         <li><Button type="submit">Filter</Button></li>
         <li>

@@ -121,7 +121,12 @@ const valueOptions = computed(() => {
     </div>
 
     <div class="col actions">
-      <Button class="btn-small btn-delete" @click="$emit('remove')">-</Button>
+      <Button class="btn-small btn-delete" @click="$emit('remove')">&#xFF0D;</Button>
+      <Button
+        id="add-condition"
+        class="btn-small"
+        @click="$emit('add')"
+        >&#xFF0B;</Button>
     </div>
   </div>
 </template>
