@@ -65,8 +65,8 @@ const valueOptions = computed(() => {
 </script>
 
 <template>
-  <div class="row">
-    <div class="col">
+  <div class="df-ui-row df-ui-condition df-ui-condition-sticky">
+    <div class="df-ui-col">
       <!-- Identifier -->
       <Select
         :options="identifierOptions"
@@ -75,7 +75,7 @@ const valueOptions = computed(() => {
       />
     </div>
 
-    <div class="col">
+    <div class="df-ui-col">
       <!-- Relative -->
       <Select
         :options="relativeOptions"
@@ -85,10 +85,10 @@ const valueOptions = computed(() => {
       />
     </div>
 
-    <div class="col">
+    <div class="df-ui-col">
       <!-- Value -->
       <span v-if="!condition.identifier"
-        ><!-- placeholder --><input disabled
+        ><!-- placeholder --><input type="text" disabled
       /></span>
 
       <span v-else-if="valueOptions.type === 'choice'">
@@ -121,14 +121,14 @@ const valueOptions = computed(() => {
         }}</label>
       </span>
 
-      <input v-else v-model="condition.value" />
+      <input type="text" v-else v-model="condition.value" />
     </div>
 
-    <div class="col actions">
-      <Button class="btn-small btn-delete btn-disabled">&#xFF0D;</Button>
+    <div class="df-ui-col df-ui-row-actions">
+      <Button class="btn-tiny btn-disabled">&#xFF0D;</Button>
       <Button
         id="add-condition"
-        class="btn-small"
+        class="btn-tiny"
         @click="$emit('add')"
         >&#xFF0B;</Button>
     </div>

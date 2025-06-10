@@ -15,13 +15,28 @@ const toggleShowing = () => {
 </script>
 
 <template>
-  <h3>{{ name }} debug data</h3>
-  <Button class="btn-small" @click="toggleShowing">{{
-    isShowing ? "hide" : "show"
-  }}</Button>
-  <pre v-show="isShowing">
-    {{ dataAsString }}
-  </pre>
+  <div class="df-ui-debug-data">
+    <div class="df-ui-debug-data-header">
+      <h4>{{ name }}</h4>
+      <Button class="btn-tiny" @click="toggleShowing">{{
+        isShowing ? "hide" : "show"
+      }}</Button>
+    </div>
+    <pre v-show="isShowing">{{
+      dataAsString
+    }}</pre>
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.df-ui-debug-data {
+  margin: 20px 0;
+}
+.df-ui-debug-data-header {
+  display: flex;
+}
+.df-ui-debug-data-header h4 {
+  margin: 0;
+  flex: 1;
+}
+</style>

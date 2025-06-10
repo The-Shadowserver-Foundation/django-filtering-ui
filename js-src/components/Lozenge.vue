@@ -27,16 +27,16 @@ const getChoiceLabel = () => {
 </script>
 
 <template>
-  <div class="filter-lozenge">
-    <span class="identifier" :data-value="condition.identifier">{{
+  <div class="df-ui-lozenge">
+    <span class="df-ui-lozenge-identifier" :data-value="condition.identifier">{{
       schemaField.label
     }}</span
-    >&nbsp;
-    <span class="relative" :data-value="condition.relative">{{
+    >
+    <span class="df-ui-lozenge-relative" :data-value="condition.relative">{{
       relativeLabel
     }}</span
-    >&nbsp;
-    <span class="value" :data-value="condition.value">
+    >
+    <span class="df-ui-lozenge-value" :data-value="condition.value">
       <template
         v-if="schemaField.lookups[condition.relative].type == 'choice'"
         >{{ getChoiceLabel() }}</template
@@ -45,63 +45,42 @@ const getChoiceLabel = () => {
     </span>
     <a
       v-if="!disableRemove"
-      class="clear"
+      class="df-ui-lozenge-clear"
       href="#"
       title="clear"
       @click="$emit('remove')"
-      >x</a
+      ></a
     >
   </div>
 </template>
 
 <style scoped>
-.filter-lozenge {
-  color: #000;
-  /* padding: 5px 10px 5px 20px; */
-  padding: 5px 10px 5px 10px;
+.df-ui-lozenge {
+  --lozenge-color: #000;
+  --lozenge-border-color: var(--django-filtering-ui-tertiary);
+  --lozenge-background-color: var(--django-filtering-ui-tertiary-shaded);
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+  padding: 2px 0.75em;
   border-radius: 10px;
-  margin: 0 2px;
-  position: relative;
-  border: 1px solid var(--django-filtering-ui-tertiary);
-  background-color: var(--django-filtering-ui-tertiary-shaded);
+  color: var(--lozenge-color);
+  border: 1px solid var(--lozenge-border-color);
+  background-color: var(--lozenge-background-color);
 }
-.filter-lozenge > .value {
+.df-ui-lozenge-value {
   font-weight: bold;
 }
-
-.filter-lozenge .filter-relative {
-  display: none;
-  text-transform: uppercase;
-  font-weight: bolder;
-  font-size: 0.8rem;
-  position: absolute;
-  left: 0;
-  transform-origin: 0 0;
-  transform: rotate(-90deg);
-}
-
-.filter-lozenge:has(.filter-relative.or) {
-  .filter-relative {
-    color: var(--django-filtering-ui-primary-inverse);
-    top: 1.8rem;
-  }
-}
-.filter-lozenge:has(.filter-relative.and) {
-  .filter-relative {
-    color: var(--django-filtering-ui-primary-inverse);
-    top: 2rem;
-  }
-}
-
-.filter-lozenge a.clear {
+.df-ui-lozenge-clear {
   text-decoration: none;
-  color: #999;
-  padding-left: 4px;
+  color: var(--lozenge-border-color);
 }
-.filter-lozenge a.clear::before {
-  content: " ";
-  padding-left: 4px;
-  max-height: 100%;
-  border-left: 1px solid #aaa;
+.df-ui-lozenge-clear::before {
+  content: "|";
+  margin-left: 0.25em;
+}
+.df-ui-lozenge-clear::after {
+  content: "\00D7";
+  margin-left: 0.5em;
 }
 </style>

@@ -31,8 +31,8 @@ const {
 });
 
 const matchOptions = [
-  { value: "and", label: "All of" },
-  { value: "or", label: "Any of" },
+  { value: "and", label: "all" },
+  { value: "or", label: "any" },
 ];
 
 const cancelHandler = () => {
@@ -72,13 +72,13 @@ const submitHandler = async (e) => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="df-ui-filtering">
     <form method="post" @submit="submitHandler">
       <input type="hidden" name="csrfmiddlewaretoken" :value="csrftoken" />
       <input type="hidden" name="q" :value="renderedConditions" />
       <!-- The first row defines the top-level operator to use -->
-      <div class="row">
-        <div class="col">
+      <div class="df-ui-row df-ui-match-type">
+        <div class="df-ui-col">
           Match
           <Select
             id="top-level-operator"
@@ -86,7 +86,7 @@ const submitHandler = async (e) => {
             :options="matchOptions"
             :includeBlank="false"
           />
-          the following criteria...
+          of the following criteria:
         </div>
       </div>
       <!-- Sticky criteria rows -->
@@ -106,35 +106,55 @@ const submitHandler = async (e) => {
         @add="grouping.addConditionsAfter(condition, new Condition())"
         @remove="grouping.removeConditions(condition)"
       />
-      <ul class="spaced">
-        <li><Button type="submit">Filter</Button></li>
-        <li>
-          <Button class="cancel btn-negative" @click="cancelHandler"
-            >Cancel</Button
-          >
-        </li>
-      </ul>
+      <div class="df-ui-row df-ui-form-actions">
+        <Button class="btn-action" type="submit">Filter</Button>
+        <Button class="cancel btn-secondary" @click="cancelHandler"
+          >Cancel</Button
+        >
+      </div>
     </form>
   </div>
-  <div v-if="debugEnabled">
-    <hr />
+
+  <div class="df-ui-debug" v-if="debugEnabled">
+    <h3>Debug</h3>
     <DebugDataDisplay
-      name="Query Filters data"
+      name="Query filters data"
       :data="JSON.parse(renderedConditions)"
       :expanded="true"
     />
-    <DebugDataDisplay name="Options Schema" :data="filterSchema" />
-    <DebugDataDisplay name="JSON Schema" :data="filteringJSONSchema" />
+    <DebugDataDisplay name="Options schema" :data="filterSchema" />
+    <DebugDataDisplay name="JSON schema" :data="filteringJSONSchema" />
   </div>
 </template>
 
 <style scoped>
-:deep(.row) {
-  margin-bottom: 10px;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 10px;
+.df-ui-filtering {
+  margin: 30px 0;
 }
-:deep(.col.actions) {
-  text-align: right;
+.df-ui-row.df-ui-match-type {
+  margin: 20px 0;
+}
+.df-ui-row.df-ui-condition {
+  display: flex;
+  margin: 10px 0;
+  align-items: center;
+  gap: 10px;
+}
+:deep(.df-ui-row.df-ui-condition .df-ui-col) {
+  flex: 1;
+}
+:deep(.df-ui-row.df-ui-condition input[type="text"]),
+:deep(.df-ui-row.df-ui-condition select) {
+  width: 100%;
+}
+:deep(.df-ui-row.df-ui-condition .df-ui-row-actions) {
+  display: flex;
+  gap: 5px;
+  justify-content: right;
+}
+.df-ui-form-actions {
+  display: flex;
+  gap: 10px;
+  margin: 30px 0;
 }
 </style>
