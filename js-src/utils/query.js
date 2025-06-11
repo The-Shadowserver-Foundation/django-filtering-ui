@@ -66,9 +66,7 @@ export class Grouping {
   }
   addConditionsAfter(conditionBefore, ...conditions) {
     const indexBefore = this.state.conditions.findIndex((c) => {
-      if (c.id == conditionBefore.id) {
-        return c;
-      }
+      return (c.id == conditionBefore.id);
     });
     const index = indexBefore + 1;
     this.state.conditions.splice(index, 0, ...conditions);
