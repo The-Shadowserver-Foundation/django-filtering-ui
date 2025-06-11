@@ -57,6 +57,70 @@ describe("Tests ComposableFilters behavior", () => {
     expect(qInput.element.value).toEqual('["and",[[null,{}],[null,{}]]]');
   });
 
+  test("adding rows in specific positions", async (context) => {
+    const wrapper = mountTarget();
+
+    // Create a few initial rows.
+    const row1 = wrapper.findAll(".df-ui-condition")[0];
+    const row1Add = row1.get("#add-condition");
+    await row1Add.trigger("click");
+    await row1Add.trigger("click");
+
+    // Fill in some values so we can tell them apart
+    const row2 = wrapper.findAll(".df-ui-condition")[1];
+    const row3 = wrapper.findAll(".df-ui-condition")[2];
+
+    const setRowValue = async (row, value) => {
+      const cols = row.findAll(".df-ui-col");
+      await cols[0].get("select").setValue("name");
+      await cols[1].get("select").setValue("iexact");
+      await cols[2].get("input").setValue(value);
+    };
+
+    await setRowValue(row1, "1st");
+    await setRowValue(row2, "2nd");
+    await setRowValue(row3, "3rd");
+
+    // Check we can add a row between the 2nd and 3rd.
+    const row2Add = row2.get("#add-condition");
+    await row2Add.trigger("click");
+
+    const values = wrapper.findAll(".df-ui-condition .df-ui-col:nth-of-type(3) input").map(input => input.element.value);
+    expect(values).toEqual(["1st", "2nd", "", "3rd"]);
+  });
+
+  test("removing rows in specific positions", async (context) => {
+    const wrapper = mountTarget();
+
+    // Create a few initial rows.
+    const row1 = wrapper.findAll(".df-ui-condition")[0];
+    const row1Add = row1.get("#add-condition");
+    await row1Add.trigger("click");
+    await row1Add.trigger("click");
+
+    // Fill in some values so we can tell them apart
+    const row2 = wrapper.findAll(".df-ui-condition")[1];
+    const row3 = wrapper.findAll(".df-ui-condition")[2];
+
+    const setRowValue = async (row, value) => {
+      const cols = row.findAll(".df-ui-col");
+      await cols[0].get("select").setValue("name");
+      await cols[1].get("select").setValue("iexact");
+      await cols[2].get("input").setValue(value);
+    };
+
+    await setRowValue(row1, "1st");
+    await setRowValue(row2, "2nd");
+    await setRowValue(row3, "3rd");
+
+    // Check we can remove the 2nd row.
+    const row2Remove = row2.get("#remove-condition");
+    await row2Remove.trigger("click");
+
+    const values = wrapper.findAll(".df-ui-condition .df-ui-col:nth-of-type(3) input").map(input => input.element.value);
+    expect(values).toEqual(["1st", "3rd"]);
+  });
+
   test("changing the top-level operator", async (context) => {
     const wrapper = mountTarget();
 

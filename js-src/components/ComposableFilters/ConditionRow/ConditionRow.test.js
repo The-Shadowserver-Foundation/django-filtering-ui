@@ -36,6 +36,17 @@ describe("testing ConditionRow", () => {
     expect(wrapper.emitted()).toHaveProperty("remove");
   });
 
+  test("add button emits 'add' event", (context) => {
+    const condition = new Condition();
+    const wrapper = mountTarget({
+      props: { condition, schema: exampleSchemaOne },
+    });
+
+    // Get remove button and trigger
+    wrapper.get(".df-ui-row-actions #add-condition").trigger("click");
+    expect(wrapper.emitted()).toHaveProperty("add");
+  });
+
   test("identifier selection sets corresponding relative value", async (context) => {
     // When the user select the identifier (e.g. Name field),
     // the corresponding relative (e.g. icontains, iexact, etc. lookups)

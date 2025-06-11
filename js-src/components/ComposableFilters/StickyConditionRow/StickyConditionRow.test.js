@@ -38,16 +38,27 @@ describe("testing StickyConditionRow", () => {
 
   test("resets to default");
 
-  // test("remove button emits 'remove' event", (context) => {
-  //   const condition = new Condition();
-  //   const wrapper = mountTarget({
-  //     props: { condition, schema: exampleSchemaOne },
-  //   });
+  test("remove button does not emit 'remove' event", (context) => {
+    const condition = new Condition();
+    const wrapper = mountTarget({
+      props: { condition, schema: exampleSchemaThree },
+    });
 
-  //   // Get remove button and trigger
-  //   wrapper.get(".actions .btn-delete").trigger("click");
-  //   expect(wrapper.emitted()).toHaveProperty("remove");
-  // });
+    // Get remove button and try to trigger
+    wrapper.get(".df-ui-row-actions #remove-condition").trigger("click");
+    expect(wrapper.emitted()).not.toHaveProperty("remove");
+  });
+
+  test("add button emits 'add' event", (context) => {
+    const condition = new Condition();
+    const wrapper = mountTarget({
+      props: { condition, schema: exampleSchemaThree },
+    });
+
+    // Get remove button and try to trigger
+    wrapper.get(".df-ui-row-actions #add-condition").trigger("click");
+    expect(wrapper.emitted()).toHaveProperty("add");
+  });
 
   // test("identifier selection sets corresponding relative value", async (context) => {
   //   // When the user select the identifier (e.g. Name field),
