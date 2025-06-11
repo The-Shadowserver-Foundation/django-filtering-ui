@@ -37,7 +37,7 @@ describe("Tests ComposableFilters behavior", () => {
     expect(topLevelOp.element.value).toEqual("and");
 
     // Check that a first row as been populated
-    const firstRow = wrapper.get("div.row:nth-of-type(2)");
+    const firstRow = wrapper.findAll(".df-ui-condition")[0];
     expect(firstRow.exists()).toBe(true);
 
     // Check the 'q' value of the form
@@ -51,7 +51,7 @@ describe("Tests ComposableFilters behavior", () => {
     await addButton.trigger("click");
 
     // Check a new row was added
-    const newRow = wrapper.get("div.row:nth-of-type(3)");
+    const newRow = wrapper.findAll(".df-ui-condition")[1];
     expect(newRow.exists()).toBe(true);
     // ...which will have added to the q condition value
     expect(qInput.element.value).toEqual('["and",[[null,{}],[null,{}]]]');
@@ -236,14 +236,14 @@ describe("Tests ComposableFilters behavior", () => {
 
     // Check the form contains the sticky row with default value.
     expect(wrapper.vm.stickies.length).toBe(1);
-    const stickyRow = wrapper.get("div.row:nth-of-type(2)");
-    expect(stickyRow.get(".col:nth-of-type(1) select").element.value).toEqual(
+    const stickyRow = wrapper.get(".df-ui-condition-sticky");
+    expect(stickyRow.get(".df-ui-col:nth-of-type(1) select").element.value).toEqual(
       stickyDefault[0],
     );
-    expect(stickyRow.get(".col:nth-of-type(2) select").element.value).toEqual(
+    expect(stickyRow.get(".df-ui-col:nth-of-type(2) select").element.value).toEqual(
       stickyDefault[1]["lookup"],
     );
-    expect(stickyRow.get(".col:nth-of-type(3) select").element.value).toEqual(
+    expect(stickyRow.get(".df-ui-col:nth-of-type(3) select").element.value).toEqual(
       stickyDefault[1]["value"],
     );
 
@@ -279,20 +279,20 @@ describe("Tests ComposableFilters behavior", () => {
 
     // Check the form contains the sticky row with default value.
     expect(wrapper.vm.stickies.length).toBe(1);
-    const stickyRow = wrapper.get("div.row:nth-of-type(2)");
+    const stickyRow = wrapper.get(".df-ui-condition-sticky");
 
     // Edit the sticky row's value
     const newValue = "any";
-    await stickyRow.get(".col:nth-of-type(3) select").setValue(newValue);
+    await stickyRow.get(".df-ui-col:nth-of-type(3) select").setValue(newValue);
 
     // Check for correct form values
-    expect(stickyRow.get(".col:nth-of-type(1) select").element.value).toEqual(
+    expect(stickyRow.get(".df-ui-col:nth-of-type(1) select").element.value).toEqual(
       stickyDefault[0],
     );
-    expect(stickyRow.get(".col:nth-of-type(2) select").element.value).toEqual(
+    expect(stickyRow.get(".df-ui-col:nth-of-type(2) select").element.value).toEqual(
       stickyDefault[1]["lookup"],
     );
-    expect(stickyRow.get(".col:nth-of-type(3) select").element.value).toEqual(
+    expect(stickyRow.get(".df-ui-col:nth-of-type(3) select").element.value).toEqual(
       newValue,
     );
 

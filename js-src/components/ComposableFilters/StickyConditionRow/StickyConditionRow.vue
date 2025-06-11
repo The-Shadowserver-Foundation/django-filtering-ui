@@ -125,7 +125,10 @@ const valueOptions = computed(() => {
     </div>
 
     <div class="df-ui-col df-ui-row-actions">
-      <Button class="btn-tiny btn-disabled">&#xFF0D;</Button>
+      <Button
+        id="remove-condition"
+        class="btn-tiny btn-disabled"
+        >&#xFF0D;</Button>
       <Button
         id="add-condition"
         class="btn-tiny"

@@ -15,13 +15,13 @@ describe("testing ConditionRow", () => {
     });
 
     // Check identifier
-    const identifierSelect = wrapper.get(".col:nth-of-type(1) select");
+    const identifierSelect = wrapper.get(".df-ui-col:nth-of-type(1) select");
     expect(identifierSelect.element.value).toBe(identifier);
     // Check relative
-    const relativeSelect = wrapper.get(".col:nth-of-type(2) select");
+    const relativeSelect = wrapper.get(".df-ui-col:nth-of-type(2) select");
     expect(relativeSelect.element.value).toBe(relative);
     // Check value
-    const valueInput = wrapper.get(".col:nth-of-type(3) input");
+    const valueInput = wrapper.get(".df-ui-col:nth-of-type(3) input");
     expect(valueInput.element.value).toBe(value);
   });
 
@@ -32,7 +32,7 @@ describe("testing ConditionRow", () => {
     });
 
     // Get remove button and trigger
-    wrapper.get(".actions .btn-delete").trigger("click");
+    wrapper.get(".df-ui-row-actions #remove-condition").trigger("click");
     expect(wrapper.emitted()).toHaveProperty("remove");
   });
 
@@ -47,10 +47,10 @@ describe("testing ConditionRow", () => {
       props: { condition, schema },
     });
 
-    const identifierSelect = wrapper.get(".col:nth-of-type(1) select");
-    const relativeSelect = wrapper.get(".col:nth-of-type(2) select");
+    const identifierSelect = wrapper.get(".df-ui-col:nth-of-type(1) select");
+    const relativeSelect = wrapper.get(".df-ui-col:nth-of-type(2) select");
 
-    const getValueInput = () => wrapper.get(".col:nth-of-type(3) input");
+    const getValueInput = () => wrapper.get(".df-ui-col:nth-of-type(3) input");
 
     // Verify the relative and value inputs are disabled,
     // because the identifier input has no value.
@@ -105,14 +105,14 @@ describe("testing ConditionRow", () => {
     });
 
     // Check identifier
-    const identifierSelect = wrapper.get(".col:nth-of-type(1) select");
+    const identifierSelect = wrapper.get(".df-ui-col:nth-of-type(1) select");
     expect(identifierSelect.element.value).toBe(identifier);
     // Check relative
-    const relativeSelect = wrapper.get(".col:nth-of-type(2) select");
+    const relativeSelect = wrapper.get(".df-ui-col:nth-of-type(2) select");
     expect(relativeSelect.element.value).toBe(relative);
     // Check value
     const [trueValueInput, falseValueInput] = wrapper.findAll(
-      ".col:nth-of-type(3) input",
+      ".df-ui-col:nth-of-type(3) input",
     );
     // Looking for the correct initial value
     expect(trueValueInput.element.checked).toBe(false);
@@ -127,13 +127,13 @@ describe("testing ConditionRow", () => {
     });
 
     // Check identifier
-    const identifierSelect = wrapper.get(".col:nth-of-type(1) select");
+    const identifierSelect = wrapper.get(".df-ui-col:nth-of-type(1) select");
     expect(identifierSelect.element.value).toBe(identifier);
     // Check relative
-    const relativeSelect = wrapper.get(".col:nth-of-type(2) select");
+    const relativeSelect = wrapper.get(".df-ui-col:nth-of-type(2) select");
     expect(relativeSelect.element.value).toBe(relative);
     // Check value
-    const valueSelect = wrapper.get(".col:nth-of-type(3) select");
+    const valueSelect = wrapper.get(".df-ui-col:nth-of-type(3) select");
     expect(valueSelect.element.value).toBe(value);
     await valueSelect.setValue("malware");
     expect(valueSelect.element.value).toBe("malware");

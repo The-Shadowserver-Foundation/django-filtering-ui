@@ -20,13 +20,13 @@ describe("testing StickyConditionRow", () => {
     });
 
     // Check identifier
-    const identifierSelect = wrapper.get(".col:nth-of-type(1) select");
+    const identifierSelect = wrapper.get(".df-ui-col:nth-of-type(1) select");
     expect(identifierSelect.element.value).toBe(identifier);
     // Check relative
-    const relativeSelect = wrapper.get(".col:nth-of-type(2) select");
+    const relativeSelect = wrapper.get(".df-ui-col:nth-of-type(2) select");
     expect(relativeSelect.element.value).toBe(relative);
     // Check value
-    const valueInput = wrapper.get(".col:nth-of-type(3) select");
+    const valueInput = wrapper.get(".df-ui-col:nth-of-type(3) select");
     expect(valueInput.element.value).toBe(value);
   });
 

@@ -121,7 +121,11 @@ const valueOptions = computed(() => {
     </div>
 
     <div class="df-ui-col df-ui-row-actions">
-      <Button class="btn-tiny" @click="$emit('remove')">&#xFF0D;</Button>
+      <Button
+        id="remove-condition"
+        class="btn-tiny"
+        @click="$emit('remove')"
+        >&#xFF0D;</Button>
       <Button
         id="add-condition"
         class="btn-tiny"
