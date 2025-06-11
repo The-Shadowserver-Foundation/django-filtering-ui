@@ -56,12 +56,12 @@ const handleStickyReset = (c) => {
 </script>
 
 <template>
-  <form ref="filteringForm" method="post" :action="filteringUrl">
+  <form class="df-ui-lozenges-form" ref="filteringForm" method="post" :action="filteringUrl">
     <input type="hidden" name="csrfmiddlewaretoken" :value="csrftoken" />
     <input type="hidden" name="q" :value="renderedConditions" />
   </form>
-  <div class="filter-container" v-if="hasConditions">
-    <span class="preamble"> Results match {{ rootOperatorLabel }} of: </span>
+  <div class="df-ui-lozenges" v-if="hasConditions">
+    <span class="df-ui-lozenges-preamble">Results match {{ rootOperatorLabel }} of:</span>
     <Lozenge
       v-for="condition in stickies"
       :key="condition.id"
@@ -82,20 +82,18 @@ const handleStickyReset = (c) => {
 </template>
 
 <style scoped>
-form {
+.df-ui-lozenges-form {
   display: none;
 }
-.filter-container {
+.df-ui-lozenges {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  padding: 0 0.2em 0.5em;
-  .preamble {
-    /* color: #000; */
-    padding: 5px 10px 5px 10px;
-    border-radius: 10px;
-    margin: 0 2px;
-    position: relative;
-  }
+  align-items: center;
+  margin: 20px 0;
+  gap: 5px;
+}
+.df-ui-lozenges-preamble {
+  margin-right: 5px;
 }
 </style>

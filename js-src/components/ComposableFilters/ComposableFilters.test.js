@@ -37,7 +37,7 @@ describe("Tests ComposableFilters behavior", () => {
     expect(topLevelOp.element.value).toEqual("and");
 
     // Check that a first row as been populated
-    const firstRow = wrapper.get("div.row:nth-of-type(2)");
+    const firstRow = wrapper.findAll(".df-ui-condition")[0];
     expect(firstRow.exists()).toBe(true);
 
     // Check the 'q' value of the form
@@ -51,10 +51,74 @@ describe("Tests ComposableFilters behavior", () => {
     await addButton.trigger("click");
 
     // Check a new row was added
-    const newRow = wrapper.get("div.row:nth-of-type(3)");
+    const newRow = wrapper.findAll(".df-ui-condition")[1];
     expect(newRow.exists()).toBe(true);
     // ...which will have added to the q condition value
     expect(qInput.element.value).toEqual('["and",[[null,{}],[null,{}]]]');
+  });
+
+  test("adding rows in specific positions", async (context) => {
+    const wrapper = mountTarget();
+
+    // Create a few initial rows.
+    const row1 = wrapper.findAll(".df-ui-condition")[0];
+    const row1Add = row1.get("#add-condition");
+    await row1Add.trigger("click");
+    await row1Add.trigger("click");
+
+    // Fill in some values so we can tell them apart
+    const row2 = wrapper.findAll(".df-ui-condition")[1];
+    const row3 = wrapper.findAll(".df-ui-condition")[2];
+
+    const setRowValue = async (row, value) => {
+      const cols = row.findAll(".df-ui-col");
+      await cols[0].get("select").setValue("name");
+      await cols[1].get("select").setValue("iexact");
+      await cols[2].get("input").setValue(value);
+    };
+
+    await setRowValue(row1, "1st");
+    await setRowValue(row2, "2nd");
+    await setRowValue(row3, "3rd");
+
+    // Check we can add a row between the 2nd and 3rd.
+    const row2Add = row2.get("#add-condition");
+    await row2Add.trigger("click");
+
+    const values = wrapper.findAll(".df-ui-condition .df-ui-col:nth-of-type(3) input").map(input => input.element.value);
+    expect(values).toEqual(["1st", "2nd", "", "3rd"]);
+  });
+
+  test("removing rows in specific positions", async (context) => {
+    const wrapper = mountTarget();
+
+    // Create a few initial rows.
+    const row1 = wrapper.findAll(".df-ui-condition")[0];
+    const row1Add = row1.get("#add-condition");
+    await row1Add.trigger("click");
+    await row1Add.trigger("click");
+
+    // Fill in some values so we can tell them apart
+    const row2 = wrapper.findAll(".df-ui-condition")[1];
+    const row3 = wrapper.findAll(".df-ui-condition")[2];
+
+    const setRowValue = async (row, value) => {
+      const cols = row.findAll(".df-ui-col");
+      await cols[0].get("select").setValue("name");
+      await cols[1].get("select").setValue("iexact");
+      await cols[2].get("input").setValue(value);
+    };
+
+    await setRowValue(row1, "1st");
+    await setRowValue(row2, "2nd");
+    await setRowValue(row3, "3rd");
+
+    // Check we can remove the 2nd row.
+    const row2Remove = row2.get("#remove-condition");
+    await row2Remove.trigger("click");
+
+    const values = wrapper.findAll(".df-ui-condition .df-ui-col:nth-of-type(3) input").map(input => input.element.value);
+    expect(values).toEqual(["1st", "3rd"]);
   });
 
   test("changing the top-level operator", async (context) => {
@@ -82,23 +146,23 @@ describe("Tests ComposableFilters behavior", () => {
     const topLevelOp = wrapper.get("#top-level-operator");
     expect(topLevelOp.element.value).toEqual(qValue[0]);
 
-    // Check that a first row as been populated
-    const rows = wrapper.findAll(
-      "div.row:nth-of-type(2), div.row:nth-of-type(3)",
-    );
+    // Check that the rows have been populated
+    const rows = wrapper.findAll(".df-ui-condition");
+    expect(rows.length).toEqual(2);
+
     // Iterate through the rows looking for matching rendered content.
     // FIXME Stub the ConditionRow so that the content is uniformly rendered for easier matching.
     for (const i in rows) {
       // Look at first select value matches up with "identifier" value.
-      expect(rows[i].get(".col:nth-of-type(1) select").element.value).toEqual(
+      expect(rows[i].get(".df-ui-col:nth-of-type(1) select").element.value).toEqual(
         qValue[1][i][0],
       );
       // Look at the second select value matching up with the "relative" or lookup value.
-      expect(rows[i].get(".col:nth-of-type(2) select").element.value).toEqual(
+      expect(rows[i].get(".df-ui-col:nth-of-type(2) select").element.value).toEqual(
         qValue[1][i][1].lookup,
       );
       // Match up the third input with the value.
-      expect(rows[i].get(".col:nth-of-type(3) input").element.value).toEqual(
+      expect(rows[i].get(".df-ui-col:nth-of-type(3) input").element.value).toEqual(
         qValue[1][i][1].value,
       );
     }
@@ -236,14 +300,14 @@ describe("Tests ComposableFilters behavior", () => {
 
     // Check the form contains the sticky row with default value.
     expect(wrapper.vm.stickies.length).toBe(1);
-    const stickyRow = wrapper.get("div.row:nth-of-type(2)");
-    expect(stickyRow.get(".col:nth-of-type(1) select").element.value).toEqual(
+    const stickyRow = wrapper.get(".df-ui-condition-sticky");
+    expect(stickyRow.get(".df-ui-col:nth-of-type(1) select").element.value).toEqual(
       stickyDefault[0],
     );
-    expect(stickyRow.get(".col:nth-of-type(2) select").element.value).toEqual(
+    expect(stickyRow.get(".df-ui-col:nth-of-type(2) select").element.value).toEqual(
       stickyDefault[1]["lookup"],
     );
-    expect(stickyRow.get(".col:nth-of-type(3) select").element.value).toEqual(
+    expect(stickyRow.get(".df-ui-col:nth-of-type(3) select").element.value).toEqual(
       stickyDefault[1]["value"],
     );
 
@@ -279,20 +343,20 @@ describe("Tests ComposableFilters behavior", () => {
 
     // Check the form contains the sticky row with default value.
     expect(wrapper.vm.stickies.length).toBe(1);
-    const stickyRow = wrapper.get("div.row:nth-of-type(2)");
+    const stickyRow = wrapper.get(".df-ui-condition-sticky");
 
     // Edit the sticky row's value
     const newValue = "any";
-    await stickyRow.get(".col:nth-of-type(3) select").setValue(newValue);
+    await stickyRow.get(".df-ui-col:nth-of-type(3) select").setValue(newValue);
 
     // Check for correct form values
-    expect(stickyRow.get(".col:nth-of-type(1) select").element.value).toEqual(
+    expect(stickyRow.get(".df-ui-col:nth-of-type(1) select").element.value).toEqual(
       stickyDefault[0],
     );
-    expect(stickyRow.get(".col:nth-of-type(2) select").element.value).toEqual(
+    expect(stickyRow.get(".df-ui-col:nth-of-type(2) select").element.value).toEqual(
       stickyDefault[1]["lookup"],
     );
-    expect(stickyRow.get(".col:nth-of-type(3) select").element.value).toEqual(
+    expect(stickyRow.get(".df-ui-col:nth-of-type(3) select").element.value).toEqual(
       newValue,
     );
 

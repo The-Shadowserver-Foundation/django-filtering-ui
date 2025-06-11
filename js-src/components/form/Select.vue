@@ -1,6 +1,4 @@
 <script setup>
-import { defineModel, defineProps } from "vue";
-
 // interface Option {
 //   value: string;
 //   label: string;

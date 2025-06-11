@@ -20,13 +20,13 @@ describe("testing StickyConditionRow", () => {
     });
 
     // Check identifier
-    const identifierSelect = wrapper.get(".col:nth-of-type(1) select");
+    const identifierSelect = wrapper.get(".df-ui-col:nth-of-type(1) select");
     expect(identifierSelect.element.value).toBe(identifier);
     // Check relative
-    const relativeSelect = wrapper.get(".col:nth-of-type(2) select");
+    const relativeSelect = wrapper.get(".df-ui-col:nth-of-type(2) select");
     expect(relativeSelect.element.value).toBe(relative);
     // Check value
-    const valueInput = wrapper.get(".col:nth-of-type(3) select");
+    const valueInput = wrapper.get(".df-ui-col:nth-of-type(3) select");
     expect(valueInput.element.value).toBe(value);
   });
 
@@ -38,16 +38,27 @@ describe("testing StickyConditionRow", () => {
 
   test("resets to default");
 
-  // test("remove button emits 'remove' event", (context) => {
-  //   const condition = new Condition();
-  //   const wrapper = mountTarget({
-  //     props: { condition, schema: exampleSchemaOne },
-  //   });
+  test("remove button does not emit 'remove' event", (context) => {
+    const condition = new Condition();
+    const wrapper = mountTarget({
+      props: { condition, schema: exampleSchemaThree },
+    });
 
-  //   // Get remove button and trigger
-  //   wrapper.get(".actions .btn-delete").trigger("click");
-  //   expect(wrapper.emitted()).toHaveProperty("remove");
-  // });
+    // Get remove button and try to trigger
+    wrapper.get(".df-ui-row-actions #remove-condition").trigger("click");
+    expect(wrapper.emitted()).not.toHaveProperty("remove");
+  });
+
+  test("add button emits 'add' event", (context) => {
+    const condition = new Condition();
+    const wrapper = mountTarget({
+      props: { condition, schema: exampleSchemaThree },
+    });
+
+    // Get remove button and try to trigger
+    wrapper.get(".df-ui-row-actions #add-condition").trigger("click");
+    expect(wrapper.emitted()).toHaveProperty("add");
+  });
 
   // test("identifier selection sets corresponding relative value", async (context) => {
   //   // When the user select the identifier (e.g. Name field),

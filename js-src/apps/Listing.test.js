@@ -40,7 +40,7 @@ describe("testing high-level lozenge interface rendering", () => {
 
     // Check the preamble text renders 'any'
     // for the `or` operator in the query data.
-    expect(wrapper.get(".preamble").text()).toBe("Results match any of:");
+    expect(wrapper.get(".df-ui-lozenges-preamble").text()).toBe("Results match any of:");
 
     const lozenges = wrapper.findAllComponents({ name: "Lozenge" });
     expect(lozenges.length).toEqual(exampleQValueOne[1].length);
@@ -49,9 +49,9 @@ describe("testing high-level lozenge interface rendering", () => {
       const [identifier, { lookup, value }] = exampleQValueOne[1][i];
       // Check the target component element for the expected data.
       const loz = lozenges[i];
-      expect(loz.get(".identifier").attributes("data-value")).toBe(identifier);
-      expect(loz.get(".relative").attributes("data-value")).toBe(lookup);
-      expect(loz.get(".value").attributes("data-value")).toBe(value);
+      expect(loz.get(".df-ui-lozenge-identifier").attributes("data-value")).toBe(identifier);
+      expect(loz.get(".df-ui-lozenge-relative").attributes("data-value")).toBe(lookup);
+      expect(loz.get(".df-ui-lozenge-value").attributes("data-value")).toBe(value);
     }
 
     // Renders the underlying form used to convey changes
@@ -81,9 +81,9 @@ describe("testing high-level lozenge interface rendering", () => {
       const [identifier, { lookup, value }] = qValue[1][i];
       // Check the target component element for the expected data.
       const loz = lozenges[i];
-      expect(loz.get(".identifier").attributes("data-value")).toBe(identifier);
-      expect(loz.get(".relative").attributes("data-value")).toBe(lookup);
-      expect(loz.get(".value").attributes("data-value")).toBe(value);
+      expect(loz.get(".df-ui-lozenge-identifier").attributes("data-value")).toBe(identifier);
+      expect(loz.get(".df-ui-lozenge-relative").attributes("data-value")).toBe(lookup);
+      expect(loz.get(".df-ui-lozenge-value").attributes("data-value")).toBe(value);
     }
   });
 
@@ -106,12 +106,12 @@ describe("testing high-level lozenge interface rendering", () => {
     form.element.addEventListener("submit", submitListener);
 
     // Target action
-    await loz.get("a.clear").trigger("click");
+    await loz.get(".df-ui-lozenge-clear").trigger("click");
 
     // Check form submission event triggered
     expect(submitListener).toHaveBeenCalled();
     // Check outer container is no longer present.
-    expect(wrapper.find(".filter-container").exists()).toBe(false);
+    expect(wrapper.find(".df-lozenges").exists()).toBe(false);
   });
 
   test("removal of condition submits query data", async () => {
@@ -140,7 +140,7 @@ describe("testing high-level lozenge interface rendering", () => {
     const loz = lozenges[2];
 
     // Trigger the removal of the lozenge
-    await loz.get("a.clear").trigger("click");
+    await loz.get(".df-ui-lozenge-clear").trigger("click");
 
     // Check form submission event triggered
     expect(submitListener).toHaveBeenCalled();
@@ -166,11 +166,11 @@ describe("testing high-level lozenge interface rendering", () => {
       exampleSchemaThree.filters.type.sticky_default;
     // Check the target component element for the expected data.
     const loz = lozenges[0];
-    expect(loz.get(".identifier").attributes("data-value")).toBe(identifier);
-    expect(loz.get(".relative").attributes("data-value")).toBe(lookup);
-    expect(loz.get(".value").attributes("data-value")).toBe(value);
+    expect(loz.get(".df-ui-lozenge-identifier").attributes("data-value")).toBe(identifier);
+    expect(loz.get(".df-ui-lozenge-relative").attributes("data-value")).toBe(lookup);
+    expect(loz.get(".df-ui-lozenge-value").attributes("data-value")).toBe(value);
     // Check the removal button is not present
-    expect(loz.find("a.clear").exists()).toBe(false);
+    expect(loz.find(".df-ui-lozenge-clear").exists()).toBe(false);
   });
 
   test("renders with a non-default sticky condition and other condition", () => {
@@ -209,14 +209,14 @@ describe("testing high-level lozenge interface rendering", () => {
       const desired = expectedValues[i];
       // Check the target component element for the expected data.
       const loz = lozenges[i];
-      expect(loz.get(".identifier").attributes("data-value")).toBe(
+      expect(loz.get(".df-ui-lozenge-identifier").attributes("data-value")).toBe(
         desired.identifier,
       );
-      expect(loz.get(".relative").attributes("data-value")).toBe(
+      expect(loz.get(".df-ui-lozenge-relative").attributes("data-value")).toBe(
         desired.relative,
       );
-      expect(loz.get(".value").attributes("data-value")).toBe(desired.value);
-      expect(loz.find("a.clear").exists()).toBe(desired.exists);
+      expect(loz.get(".df-ui-lozenge-value").attributes("data-value")).toBe(desired.value);
+      expect(loz.find(".df-ui-lozenge-clear").exists()).toBe(desired.exists);
     }
   });
 
@@ -242,7 +242,7 @@ describe("testing high-level lozenge interface rendering", () => {
     // Verify we are looking at the correct lozenge
     expect(loz.vm.condition.identifier).toEqual("type");
     // Reset the sticky condition
-    await loz.find("a.clear").trigger("click");
+    await loz.find(".df-ui-lozenge-clear").trigger("click");
 
     // Check form submission value
     const qInput = wrapper.get("form").get('input[name="q"]');
