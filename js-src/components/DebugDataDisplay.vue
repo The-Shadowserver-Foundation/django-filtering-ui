@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, computed, ref } from "vue";
+import { computed, ref } from "vue";
 import Button from "@/components/form/Button.vue";
 
 const { name, data, expanded } = defineProps(["name", "data", "expanded"]);

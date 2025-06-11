@@ -1,5 +1,5 @@
 <script setup>
-import { computed, defineProps, watch } from "vue";
+import { computed, watch } from "vue";
 import Button from "@/components/form/Button.vue";
 import Select from "@/components/form/Select.vue";
 

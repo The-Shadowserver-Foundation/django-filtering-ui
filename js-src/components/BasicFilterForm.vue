@@ -1,5 +1,4 @@
 <script setup>
-import { defineProps } from "vue";
 import useCsrfToken from "@/composables/useCsrfToken";
 
 const csrftoken = useCsrfToken();
