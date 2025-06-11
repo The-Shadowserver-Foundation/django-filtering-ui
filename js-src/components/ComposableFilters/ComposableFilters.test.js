@@ -82,23 +82,23 @@ describe("Tests ComposableFilters behavior", () => {
     const topLevelOp = wrapper.get("#top-level-operator");
     expect(topLevelOp.element.value).toEqual(qValue[0]);
 
-    // Check that a first row as been populated
-    const rows = wrapper.findAll(
-      "div.row:nth-of-type(2), div.row:nth-of-type(3)",
-    );
+    // Check that the rows have been populated
+    const rows = wrapper.findAll(".df-ui-condition");
+    expect(rows.length).toEqual(2);
+
     // Iterate through the rows looking for matching rendered content.
     // FIXME Stub the ConditionRow so that the content is uniformly rendered for easier matching.
     for (const i in rows) {
       // Look at first select value matches up with "identifier" value.
-      expect(rows[i].get(".col:nth-of-type(1) select").element.value).toEqual(
+      expect(rows[i].get(".df-ui-col:nth-of-type(1) select").element.value).toEqual(
         qValue[1][i][0],
       );
       // Look at the second select value matching up with the "relative" or lookup value.
-      expect(rows[i].get(".col:nth-of-type(2) select").element.value).toEqual(
+      expect(rows[i].get(".df-ui-col:nth-of-type(2) select").element.value).toEqual(
         qValue[1][i][1].lookup,
       );
       // Match up the third input with the value.
-      expect(rows[i].get(".col:nth-of-type(3) input").element.value).toEqual(
+      expect(rows[i].get(".df-ui-col:nth-of-type(3) input").element.value).toEqual(
         qValue[1][i][1].value,
       );
     }
