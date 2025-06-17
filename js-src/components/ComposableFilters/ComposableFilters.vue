@@ -36,9 +36,7 @@ const matchOptions = [
 ];
 
 const cancelHandler = () => {
-  let url = listingUrl;
-  if (original) url += `?q=${JSON.stringify(original)}`;
-  window.location.assign(url);
+  window.location.assign(listingUrl);
 };
 
 const submitHandler = async (e) => {
