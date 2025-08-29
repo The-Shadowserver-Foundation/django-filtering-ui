@@ -4,7 +4,6 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { resolve } from "path";
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
-import { splitVendorChunkPlugin } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -31,7 +30,6 @@ export default defineConfig({
   plugins: [
     vue(),
     cssInjectedByJsPlugin({ jsAssetsFilterFunction: () => true }),
-    splitVendorChunkPlugin(),
   ],
   resolve: {
     alias: {
