@@ -137,9 +137,14 @@ export const exampleSchemaFour = {
       lookups: {
         exact: {
           choices: [
-            ["Bath", "Bath"],
-            ["Kitchen", "Kitchen"],
-            ["Patio", "Patio"],
+            [
+              "Home",
+              [
+                ["Bath", "Bath"],
+                ["Kitchen", "Kitchen"],
+              ],
+            ],
+            ["Lawn & Garden", [["Patio", "Patio"]]],
           ],
           label: "equals",
           type: "choice",

@@ -2,6 +2,7 @@
 import { computed, watch } from "vue";
 import Button from "@/components/form/Button.vue";
 import Select from "@/components/form/Select.vue";
+import { structureChoiceDetails } from "@/utils/choices";
 
 const { condition, schema } = defineProps(["condition", "schema"]);
 
@@ -52,13 +53,14 @@ const relativeOptions = computed(() => {
 const valueOptions = computed(() => {
   const info = { ...schemaField.value.lookups[condition.relative] };
   if (info.type === "choice") {
-    info.choices = info.choices.map(([value, label]) => ({
-      // FIXME Ideally the value can stay the native primative,
-      //   but the django-filtering lacks the type implementation
-      //   to derive the field's type, which would give the jsonschema a valid type.
-      value: value.toString(),
-      label,
-    }));
+    info.choices = info.choices.map(([value, label]) => {
+      if (Array.isArray(label)) {
+        // Options group
+        // Invert the lable and value to conform to Django's preferred choices data structure.
+        return { label: value, value: label.map(structureChoiceDetails) };
+      }
+      return structureChoiceDetails([value, label]);
+    });
   }
   return info;
 });

@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from "vue";
+import { flattenChoicesReducer } from "@/utils/choices";
 
 const { schema, condition, disableRemove } = defineProps([
   "schema",
@@ -20,9 +21,9 @@ const relativeLabel = computed(() => {
 const getChoiceLabel = () => {
   // Find the choice in the array of choices.
   // Each choice is an array of [value, label].
-  return relativeLookupInfo.value.choices.filter(
-    ([v]) => v.toString() === condition.value,
-  )[0][1];
+  return relativeLookupInfo.value.choices
+    .reduce(flattenChoicesReducer, [])
+    .filter(([v]) => v.toString() === condition.value)[0][1];
 };
 </script>
 
