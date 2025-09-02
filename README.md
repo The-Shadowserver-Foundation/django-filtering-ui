@@ -73,7 +73,7 @@ Execute testing commands:
 
 To use the chrome debugger use the following:
 
-    npm exec -- vitest --inspect-brk 0.0.0.0:9223 --no-file-parallelism -t $TEST_FILE
+    npm exec -- vitest --inspect-brk 0.0.0.0:9223 --no-file-parallelism -t "$TEST_NAME" $TEST_FILE
 
 Then open `chrome://inspect` and `0.0.0.0:9223` as a network target.
 
