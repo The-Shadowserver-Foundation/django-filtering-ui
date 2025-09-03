@@ -29,6 +29,13 @@ describe("Tests ComposableFilters behavior", () => {
     };
   });
 
+  const setConditionRowHtml = async (row, identifier, relative, value) => {
+    const cols = row.findAll(".df-ui-col");
+    await cols[0].get("select").setValue(identifier);
+    await cols[1].get("select").setValue(relative);
+    await cols[2].get("input, select").setValue(value);
+  };
+
   test("first visit renders defaults", async (context) => {
     const wrapper = mountTarget();
 
@@ -70,22 +77,21 @@ describe("Tests ComposableFilters behavior", () => {
     const row2 = wrapper.findAll(".df-ui-condition")[1];
     const row3 = wrapper.findAll(".df-ui-condition")[2];
 
-    const setRowValue = async (row, value) => {
-      const cols = row.findAll(".df-ui-col");
-      await cols[0].get("select").setValue("name");
-      await cols[1].get("select").setValue("iexact");
-      await cols[2].get("input").setValue(value);
+    const setConditionRowHtmlValue = async (row, value) => {
+      await setConditionRowHtml(row, "name", "iexact", value);
     };
 
-    await setRowValue(row1, "1st");
-    await setRowValue(row2, "2nd");
-    await setRowValue(row3, "3rd");
+    await setConditionRowHtmlValue(row1, "1st");
+    await setConditionRowHtmlValue(row2, "2nd");
+    await setConditionRowHtmlValue(row3, "3rd");
 
     // Check we can add a row between the 2nd and 3rd.
     const row2Add = row2.get("#add-condition");
     await row2Add.trigger("click");
 
-    const values = wrapper.findAll(".df-ui-condition .df-ui-col:nth-of-type(3) input").map(input => input.element.value);
+    const values = wrapper
+      .findAll(".df-ui-condition .df-ui-col:nth-of-type(3) input")
+      .map((input) => input.element.value);
     expect(values).toEqual(["1st", "2nd", "", "3rd"]);
   });
 
@@ -102,22 +108,21 @@ describe("Tests ComposableFilters behavior", () => {
     const row2 = wrapper.findAll(".df-ui-condition")[1];
     const row3 = wrapper.findAll(".df-ui-condition")[2];
 
-    const setRowValue = async (row, value) => {
-      const cols = row.findAll(".df-ui-col");
-      await cols[0].get("select").setValue("name");
-      await cols[1].get("select").setValue("iexact");
-      await cols[2].get("input").setValue(value);
+    const setConditionRowHtmlValue = async (row, value) => {
+      await setConditionRowHtml(row, "name", "iexact", value);
     };
 
-    await setRowValue(row1, "1st");
-    await setRowValue(row2, "2nd");
-    await setRowValue(row3, "3rd");
+    await setConditionRowHtmlValue(row1, "1st");
+    await setConditionRowHtmlValue(row2, "2nd");
+    await setConditionRowHtmlValue(row3, "3rd");
 
     // Check we can remove the 2nd row.
     const row2Remove = row2.get("#remove-condition");
     await row2Remove.trigger("click");
 
-    const values = wrapper.findAll(".df-ui-condition .df-ui-col:nth-of-type(3) input").map(input => input.element.value);
+    const values = wrapper
+      .findAll(".df-ui-condition .df-ui-col:nth-of-type(3) input")
+      .map((input) => input.element.value);
     expect(values).toEqual(["1st", "3rd"]);
   });
 
@@ -154,17 +159,17 @@ describe("Tests ComposableFilters behavior", () => {
     // FIXME Stub the ConditionRow so that the content is uniformly rendered for easier matching.
     for (const i in rows) {
       // Look at first select value matches up with "identifier" value.
-      expect(rows[i].get(".df-ui-col:nth-of-type(1) select").element.value).toEqual(
-        qValue[1][i][0],
-      );
+      expect(
+        rows[i].get(".df-ui-col:nth-of-type(1) select").element.value,
+      ).toEqual(qValue[1][i][0]);
       // Look at the second select value matching up with the "relative" or lookup value.
-      expect(rows[i].get(".df-ui-col:nth-of-type(2) select").element.value).toEqual(
-        qValue[1][i][1].lookup,
-      );
+      expect(
+        rows[i].get(".df-ui-col:nth-of-type(2) select").element.value,
+      ).toEqual(qValue[1][i][1].lookup);
       // Match up the third input with the value.
-      expect(rows[i].get(".df-ui-col:nth-of-type(3) input").element.value).toEqual(
-        qValue[1][i][1].value,
-      );
+      expect(
+        rows[i].get(".df-ui-col:nth-of-type(3) input").element.value,
+      ).toEqual(qValue[1][i][1].value);
     }
 
     // Check the 'q' value of the form
