@@ -31,7 +31,7 @@ watch(
       // Apply a default value to the relative property
       condition.relative = schemaField.value.default_lookup;
       // Reset the value
-      condition.value = null;
+      condition.value = undefined;
     }
   },
 );

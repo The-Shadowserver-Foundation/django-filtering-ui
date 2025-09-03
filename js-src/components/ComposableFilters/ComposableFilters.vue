@@ -45,12 +45,12 @@ const submitHandler = async (e) => {
   // Remove obviously incomplete rows
   for (const condition of grouping.conditions) {
     if (
-      condition.identifier == undefined &&
-      condition.relative == undefined &&
+      condition.identifier == undefined ||
+      condition.relative == undefined ||
       condition.value == undefined
     ) {
       conditions.push(condition);
-    } else if (!condition.value || !condition.identifier) {
+    } else if (!condition.validate()) {
       // FIXME This works around the lack of error state by dropping the row
       //       when the value has not been supplied. Not an ideal solution,
       //       but it simply and cheaply achieves an error free submission.

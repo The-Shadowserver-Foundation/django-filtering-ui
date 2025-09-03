@@ -7,7 +7,11 @@ import {
   defaultComposableFiltersMountOptions,
   mountFactory,
 } from "@/testing/helpers";
-import { exampleQValueOne, exampleSchemaThree } from "@/testing/data";
+import {
+  exampleQValueOne,
+  exampleSchemaTwo,
+  exampleSchemaThree,
+} from "@/testing/data";
 
 const BLANK_CONDTION = JSON.parse(JSON.stringify(new Condition().toObject()));
 
@@ -238,7 +242,7 @@ describe("Tests ComposableFilters behavior", () => {
     expect(window.location.search.get("q")).toBe(null);
   });
 
-  test("dropping null row(s) on submit", async (context) => {
+  test("on submit drops incomplete rows", async (context) => {
     const listingUrl = "/listing";
     const qValue = Array.from(exampleQValueOne);
     context.assignQ(qValue);
@@ -264,18 +268,34 @@ describe("Tests ComposableFilters behavior", () => {
     expect(qInput.element.value).toEqual(JSON.stringify(qValue));
   });
 
-  test("dropping incomplete row(s) on submit", async (context) => {
-    // FIXME This test has been written to work around the lack of black input
+  test("on submit dropping and keeping rows", async (context) => {
+    // FIXME This test has been written to work around the lack of input
     //       validation reporting. Instead we simply drop the row for simplicity.
     const listingUrl = "/listing";
-    const qValue = Array.from(exampleQValueOne);
+    const qValue = [
+      "and",
+      [
+        // Tests when the legitimate value is falsy.
+        ["is_family", { lookup: "exact", value: false }],
+      ],
+    ];
     context.assignQ(qValue);
     const wrapper = mountTarget({
-      global: { provide: { "model-listing-url": listingUrl } },
+      global: {
+        provide: {
+          "model-listing-url": listingUrl,
+          "filtering-options-schema": exampleSchemaTwo,
+        },
+      },
     });
 
     // Add a new row, but do not fill it out.
     await wrapper.get("#add-condition").trigger("click");
+
+    // Add another row that simulates a partially defined condition.
+    await wrapper.get("#add-condition").trigger("click");
+    const row3 = wrapper.findAll(".df-ui-condition")[2];
+    await setConditionRowHtml(row3, "type", "exact");
 
     // Click submit
     await wrapper.get("form").trigger("submit");
@@ -285,9 +305,9 @@ describe("Tests ComposableFilters behavior", () => {
     expect(qInput.element.value).toEqual(JSON.stringify(qValue));
   });
 
-  test.todo("stop submission on row error", () => {});
+  test.todo("on submit stop on row error", () => {});
 
-  test("sticky condition appears but does not submit with default value", async (context) => {
+  test("on submit ensure sticky condition appears but not with default value", async (context) => {
     const listingUrl = "/listing";
     const stickyDefault = exampleSchemaThree.filters.type.sticky_default;
 
@@ -303,15 +323,15 @@ describe("Tests ComposableFilters behavior", () => {
     // Check the form contains the sticky row with default value.
     expect(wrapper.vm.stickies.length).toBe(1);
     const stickyRow = wrapper.get(".df-ui-condition-sticky");
-    expect(stickyRow.get(".df-ui-col:nth-of-type(1) select").element.value).toEqual(
-      stickyDefault[0],
-    );
-    expect(stickyRow.get(".df-ui-col:nth-of-type(2) select").element.value).toEqual(
-      stickyDefault[1]["lookup"],
-    );
-    expect(stickyRow.get(".df-ui-col:nth-of-type(3) select").element.value).toEqual(
-      stickyDefault[1]["value"],
-    );
+    expect(
+      stickyRow.get(".df-ui-col:nth-of-type(1) select").element.value,
+    ).toEqual(stickyDefault[0]);
+    expect(
+      stickyRow.get(".df-ui-col:nth-of-type(2) select").element.value,
+    ).toEqual(stickyDefault[1]["lookup"]);
+    expect(
+      stickyRow.get(".df-ui-col:nth-of-type(3) select").element.value,
+    ).toEqual(stickyDefault[1]["value"]);
 
     // Check the 'q' value of the form
     const form = wrapper.get("form");
@@ -330,7 +350,7 @@ describe("Tests ComposableFilters behavior", () => {
     expect(window.location.search.get("q")).toBe(null);
   });
 
-  test("sticky condition submits with edited value", async (context) => {
+  test("on submit ensure sticky condition with edited value", async (context) => {
     const listingUrl = "/listing";
     const stickyDefault = exampleSchemaThree.filters.type.sticky_default;
 
@@ -352,15 +372,15 @@ describe("Tests ComposableFilters behavior", () => {
     await stickyRow.get(".df-ui-col:nth-of-type(3) select").setValue(newValue);
 
     // Check for correct form values
-    expect(stickyRow.get(".df-ui-col:nth-of-type(1) select").element.value).toEqual(
-      stickyDefault[0],
-    );
-    expect(stickyRow.get(".df-ui-col:nth-of-type(2) select").element.value).toEqual(
-      stickyDefault[1]["lookup"],
-    );
-    expect(stickyRow.get(".df-ui-col:nth-of-type(3) select").element.value).toEqual(
-      newValue,
-    );
+    expect(
+      stickyRow.get(".df-ui-col:nth-of-type(1) select").element.value,
+    ).toEqual(stickyDefault[0]);
+    expect(
+      stickyRow.get(".df-ui-col:nth-of-type(2) select").element.value,
+    ).toEqual(stickyDefault[1]["lookup"]);
+    expect(
+      stickyRow.get(".df-ui-col:nth-of-type(3) select").element.value,
+    ).toEqual(newValue);
 
     // Check the resulting value has dropped the incomplete row
     const expectedQValue = [

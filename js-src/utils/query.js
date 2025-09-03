@@ -25,6 +25,12 @@ export class Condition {
   toObject() {
     return [this.identifier, { lookup: this.relative, value: this.value }];
   }
+  validate() {
+    if (!this.identifier || this.value == undefined) {
+      return false;
+    }
+    return true;
+  }
 }
 
 export class Grouping {
@@ -66,7 +72,7 @@ export class Grouping {
   }
   addConditionsAfter(conditionBefore, ...conditions) {
     const indexBefore = this.state.conditions.findIndex((c) => {
-      return (c.id == conditionBefore.id);
+      return c.id == conditionBefore.id;
     });
     const index = indexBefore + 1;
     this.state.conditions.splice(index, 0, ...conditions);

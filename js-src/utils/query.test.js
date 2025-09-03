@@ -6,6 +6,7 @@ describe("query structure testing", () => {
     expect(grouping.operation).toBe("and");
     expect(grouping.conditions).toEqual([]);
   });
+
   test("add single condition", () => {
     const conditions = [
       new Condition("name", "icontains", "foo"),
@@ -19,6 +20,7 @@ describe("query structure testing", () => {
     expect(q.conditions.length).toBe(3);
     expect(q.conditions).toEqual(conditions.concat([newCondition]));
   });
+
   test("remove single condition", () => {
     const conditions = [
       new Condition("name", "icontains", "foo"),
@@ -33,6 +35,7 @@ describe("query structure testing", () => {
     expect(q.conditions.length).toBe(2);
     expect(q.conditions).toEqual(conditions.slice(0, 2));
   });
+
   test("remove multiple conditions", () => {
     const conditions = [
       new Condition("name", "icontains", "foo"),
@@ -48,12 +51,59 @@ describe("query structure testing", () => {
     expect(q.conditions.length).toBe(2);
     expect(q.conditions).toEqual([conditions[0], conditions[2]]);
   });
+
   test("condition toObject maintains valid JSON data types", () => {
-    const condition = new Condition("is_native", "exact", true);
-    expect(condition.value).toBe(true);
-    expect(condition.toObject()).toEqual([
-      "is_native",
-      { lookup: "exact", value: true },
-    ]);
+    const conditions = [
+      new Condition("occurence_count", "gte", 5),
+      new Condition("created", "gte", new Date("Tue Sep 02 2025")),
+      new Condition("is_family", "exact", true),
+    ];
+
+    const q = new Grouping("and", Array.from(conditions));
+    const obj = q.toObject();
+    const expectedObj = [
+      "and",
+      [
+        [
+          "occurence_count",
+          {
+            lookup: "gte",
+            value: 5,
+          },
+        ],
+        [
+          "created",
+          {
+            lookup: "gte",
+            value: "2025-09-02T00:00:00.000Z",
+          },
+        ],
+        [
+          "is_family",
+          {
+            lookup: "exact",
+            value: true,
+          },
+        ],
+      ],
+    ];
+    expect(JSON.parse(JSON.stringify(obj))).toEqual(expectedObj);
+  });
+
+  test("validates falsy values", () => {
+    const conditions = [
+      new Condition("occurence_count", "gte", 0),
+      new Condition("created", "gte", new Date("Tue Sep 02 2025")),
+      new Condition("is_family", "exact", false),
+    ];
+
+    const q = new Grouping("and", Array.from(conditions));
+    // Test each of the conditions is valid
+    expect(
+      q.conditions.reduce(
+        (acc, condition) => acc && condition.validate(),
+        true,
+      ),
+    ).toBe(true);
   });
 });
