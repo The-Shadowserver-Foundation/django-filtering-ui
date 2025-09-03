@@ -1,8 +1,3 @@
-export const structureChoiceDetails = ([value, label]) => ({
-  value: value.toString(),
-  label,
-});
-
 export const flattenChoiceOptionsReducer = (accumulator, item) => {
   // Utility for flattening an array of grouped choices from options datastruct
   if (Array.isArray(item.value)) {

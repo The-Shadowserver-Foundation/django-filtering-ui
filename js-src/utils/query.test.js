@@ -48,4 +48,12 @@ describe("query structure testing", () => {
     expect(q.conditions.length).toBe(2);
     expect(q.conditions).toEqual([conditions[0], conditions[2]]);
   });
+  test("condition toObject maintains valid JSON data types", () => {
+    const condition = new Condition("is_native", "exact", true);
+    expect(condition.value).toBe(true);
+    expect(condition.toObject()).toEqual([
+      "is_native",
+      { lookup: "exact", value: true },
+    ]);
+  });
 });

@@ -2,7 +2,6 @@
 import { computed, watch } from "vue";
 import Button from "@/components/form/Button.vue";
 import Select from "@/components/form/Select.vue";
-import { structureChoiceDetails } from "@/utils/choices";
 
 const { condition, schema } = defineProps(["condition", "schema"]);
 
@@ -52,6 +51,7 @@ const relativeOptions = computed(() => {
 // --- Value ---
 const valueOptions = computed(() => {
   const info = { ...schemaField.value.lookups[condition.relative] };
+  const structureChoiceDetails = ([value, label]) => ({ value, label });
   if (info.type === "choice") {
     info.choices = info.choices.map(([value, label]) => {
       if (Array.isArray(label)) {

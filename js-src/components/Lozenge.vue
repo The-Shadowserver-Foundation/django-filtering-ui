@@ -23,7 +23,7 @@ const getChoiceLabel = () => {
   // Each choice is an array of [value, label].
   return relativeLookupInfo.value.choices
     .reduce(flattenChoicesReducer, [])
-    .filter(([v]) => v.toString() === condition.value)[0][1];
+    .filter(([v]) => v === condition.value)[0][1];
 };
 </script>
 

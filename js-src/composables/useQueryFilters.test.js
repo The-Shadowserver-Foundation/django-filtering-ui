@@ -3,6 +3,7 @@ import useQueryFilters from "./useQueryFilters";
 import { Condition, Grouping } from "@/utils/query";
 import {
   exampleSchemaOne,
+  exampleSchemaTwo,
   exampleSchemaThree,
   exampleSchemaFour,
 } from "@/testing/data";
@@ -139,6 +140,42 @@ describe("tests useQueryFilters computed properties", () => {
     mockWindowLocation();
   });
 
+  test("rendered preserves value data type", () => {
+    const qValue = [
+      "and",
+      [
+        ["is_family", { lookup: "exact", value: true }],
+        ["type", { lookup: "exact", value: "tool" }],
+      ],
+    ];
+    // Initialize the data
+    const q = Grouping.fromObject(qValue);
+    window.location.assign(`?q=${JSON.stringify(qValue)}`);
+
+    // Target
+    const { grouping, stickies, rendered, original } = useQueryFilters({
+      optionsSchema: exampleSchemaTwo,
+    });
+
+    // Check for initial representation of data
+    expect(grouping.conditions.length).toEqual(2);
+    expect(stickies.value.length).toEqual(0);
+    expect(grouping.conditions.map((x) => x.identifier)).toEqual([
+      "is_family",
+      "type",
+    ]);
+    // Check initially that rendered is equal to the original
+    expect(rendered.value).toEqual(JSON.stringify(original));
+
+    // Simulate a modification
+    grouping.conditions.push(new Condition("type", "exact", "malware"));
+    const [operation, conditions] = JSON.parse(rendered.value);
+    expect(operation).toEqual(qValue[0]);
+    // Check the modification reactively updates computed property
+    expect(conditions.length).toEqual(3);
+    expect(conditions.map((x) => x[0])).toEqual(["is_family", "type", "type"]);
+  });
+
   test("changedStickies contains only stickies that have changed", () => {
     const stickyCondition = ["brand", { lookup: "exact", value: "Delta" }];
     const qValue = [
@@ -168,7 +205,7 @@ describe("tests useQueryFilters computed properties", () => {
     );
     expect(changedStickies.value[0].value).toEqual(stickyCondition[1].value);
 
-    // Similuate a modification to the stickies reactively updates computed property
+    // Simulate a modification to the stickies reactively updates computed property
     stickies.value.push(new Condition("category", "exact", "Patio"));
     expect(changedStickies.value.length).toEqual(2);
     expect(changedStickies.value.map((x) => x.identifier)).toEqual([
@@ -201,7 +238,7 @@ describe("tests useQueryFilters computed properties", () => {
     // Check initially that rendered is equal to the original
     expect(rendered.value).toEqual(JSON.stringify(original));
 
-    // Similuate a modification to the stickies and grouping
+    // Simulate a modification to the stickies and grouping
     stickies.value.push(new Condition("category", "exact", "Patio"));
     grouping.conditions.push(new Condition("name", "icontains", "prep"));
     const [operation, conditions] = JSON.parse(rendered.value);

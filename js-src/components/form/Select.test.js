@@ -125,4 +125,37 @@ describe("Test Select component", () => {
     await wrapper.find("select").setValue(selection);
     expect(wrapper.props("modelValue")).toBe(selection);
   });
+
+  test("preserves literal value", async () => {
+    const initialValue = false;
+    const options = [
+      { value: true, label: "Yes", disabled: false },
+      { value: false, label: "No", disabled: false },
+    ];
+    const wrapper = mount(Select, {
+      props: {
+        options,
+        includeBlank: false,
+        // macro expansion props for `v-model`
+        modelValue: initialValue,
+        "onUpdate:modelValue": (e) => wrapper.setProps({ modelValue: e }),
+      },
+    });
+
+    // Check selection change sets the model value
+    expect(wrapper.props("modelValue")).toBe(initialValue);
+    const selection = true;
+    await wrapper.find("select").setValue(selection);
+    expect(wrapper.props("modelValue")).toBe(selection);
+
+    // Check The options provided as as defined.
+    expect(
+      wrapper.findAll("select option").map((e) => ({
+        label: e.text(),
+        value: e.attributes("value"),
+        disabled: "disabled" in e.attributes(),
+      })),
+      // Check equality, where datapoint is going to be cast to a string in the html attribute
+    ).toEqual(options.map((o) => ({ ...o, value: o.value.toString() })));
+  });
 });
