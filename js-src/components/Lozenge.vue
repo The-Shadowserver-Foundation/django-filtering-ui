@@ -31,17 +31,21 @@ const getChoiceLabel = () => {
   <div class="df-ui-lozenge">
     <span class="df-ui-lozenge-identifier" :data-value="condition.identifier">{{
       schemaField.label
-    }}</span
-    >
+    }}</span>
     <span class="df-ui-lozenge-relative" :data-value="condition.relative">{{
       relativeLabel
-    }}</span
-    >
+    }}</span>
     <span class="df-ui-lozenge-value" :data-value="condition.value">
       <template
         v-if="schemaField.lookups[condition.relative].type == 'choice'"
         >{{ getChoiceLabel() }}</template
       >
+      <template
+        v-else-if="schemaField.lookups[condition.relative].type == 'date-range'"
+      >
+        {{ new Date(condition.value[0]).toLocaleDateString() }} &#45;
+        {{ new Date(condition.value[1]).toLocaleDateString() }}
+      </template>
       <template v-else>{{ condition.value }}</template>
     </span>
     <a
@@ -50,8 +54,7 @@ const getChoiceLabel = () => {
       href="#"
       title="clear"
       @click="$emit('remove')"
-      ></a
-    >
+    ></a>
   </div>
 </template>
 

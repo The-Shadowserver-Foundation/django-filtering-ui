@@ -65,6 +65,15 @@ export const exampleSchemaTwo = {
       },
       label: "Is family?",
     },
+    created: {
+      default_lookup: "range",
+      lookups: {
+        range: {
+          type: "date-range",
+          label: "between",
+        },
+      },
+    },
   },
 };
 

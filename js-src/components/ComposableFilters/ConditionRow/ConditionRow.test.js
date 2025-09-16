@@ -149,4 +149,79 @@ describe("testing ConditionRow", () => {
     await valueSelect.setValue("malware");
     expect(valueSelect.element.value).toBe("malware");
   });
+
+  test("date range lookup type renders two date inputs", async () => {
+    const [identifier, relative, value] = [
+      "created",
+      "range",
+      ["2025-09-10", "2025-09-11"],
+    ];
+    const condition = new Condition(identifier, relative, value);
+    const wrapper = mountTarget({
+      props: { condition, schema: exampleSchemaTwo },
+    });
+
+    // Check identifier
+    const identifierSelect = wrapper.get(".df-ui-col:nth-of-type(1) select");
+    expect(identifierSelect.element.value).toBe(identifier);
+    // Check relative
+    const relativeSelect = wrapper.get(".df-ui-col:nth-of-type(2) select");
+    expect(relativeSelect.element.value).toBe(relative);
+    // Check value
+    const valueInput0 = wrapper.get(
+      ".df-ui-col:nth-of-type(3) input:nth-of-type(1)",
+    );
+    const valueInput1 = wrapper.get(
+      ".df-ui-col:nth-of-type(3) input:nth-of-type(2)",
+    );
+    expect(valueInput0.element.value).toBe(value[0]);
+    expect(valueInput1.element.value).toBe(value[1]);
+
+    // Change the value and check the reesults
+    const newValue1 = "2025-09-30";
+    await valueInput1.setValue(newValue1);
+    expect(valueInput0.element.value).toBe(value[0]);
+    expect(valueInput1.element.value).toBe(newValue1);
+    expect(wrapper.vm.condition.value).toEqual([value[0], newValue1]);
+  });
+
+  test("date range lookup type has initialized value", async () => {
+    // FIXME See the FIXME in the ConditionRow component about initializing the condition.value.
+    //       This tests the hopefully temporary solution of initialzing the condition.value in the component,
+    //       because the `date-range` type requires a two value array.
+    const [identifier, relative, value] = [
+      "created",
+      "range",
+      ["2025-09-10", "2025-09-11"],
+    ];
+    const condition = new Condition();
+    const wrapper = mountTarget({
+      props: { condition, schema: exampleSchemaTwo },
+    });
+
+    // Check identifier
+    const identifierSelect = wrapper.get(".df-ui-col:nth-of-type(1) select");
+    await identifierSelect.setValue(identifier);
+    expect(identifierSelect.element.value).toBe(identifier);
+    // Check relative
+    const relativeSelect = wrapper.get(".df-ui-col:nth-of-type(2) select");
+    await relativeSelect.setValue(relative);
+    expect(relativeSelect.element.value).toBe(relative);
+    // Check value
+    const valueInput0 = wrapper.get(
+      ".df-ui-col:nth-of-type(3) input:nth-of-type(1)",
+    );
+    const valueInput1 = wrapper.get(
+      ".df-ui-col:nth-of-type(3) input:nth-of-type(2)",
+    );
+    expect(valueInput0.element.value).toBe("");
+    expect(valueInput1.element.value).toBe("");
+
+    // Change the value and check the reesults
+    const newValue1 = "2025-09-30";
+    await valueInput1.setValue(newValue1);
+    expect(valueInput0.element.value).toBe("");
+    expect(valueInput1.element.value).toBe(newValue1);
+    expect(wrapper.vm.condition.value).toEqual([undefined, newValue1]);
+  });
 });

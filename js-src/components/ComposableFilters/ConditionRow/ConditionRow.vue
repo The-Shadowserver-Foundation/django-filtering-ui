@@ -35,6 +35,17 @@ watch(
     }
   },
 );
+watch(
+  () => condition.relative,
+  (relative) => {
+    // FIXME This type of initialization needs to happen in the Condition.
+    if (schemaField.value.lookups[relative].type == "date-range") {
+      if (typeof condition.value != "array") {
+        condition.value = [undefined, undefined];
+      }
+    }
+  },
+);
 
 // --- Relative ---
 const relativeOptions = computed(() => {
@@ -117,6 +128,12 @@ const valueOptions = computed(() => {
         /><label :for="`false-value-${condition.id}`">{{
           valueOptions.false_choice[1]
         }}</label>
+      </span>
+
+      <span v-else-if="valueOptions.type === 'date-range'">
+        <input type="date" v-model="condition.value[0]" />
+        &#45;
+        <input type="date" v-model="condition.value[1]" />
       </span>
 
       <input type="text" v-else v-model="condition.value" />
