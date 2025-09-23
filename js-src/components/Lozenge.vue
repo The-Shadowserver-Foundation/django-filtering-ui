@@ -21,9 +21,12 @@ const relativeLabel = computed(() => {
 const getChoiceLabel = () => {
   // Find the choice in the array of choices.
   // Each choice is an array of [value, label].
-  return relativeLookupInfo.value.choices
-    .reduce(flattenChoicesReducer, [])
-    .filter(([v]) => v === condition.value)[0][1];
+  return (
+    relativeLookupInfo.value.choices
+      .reduce(flattenChoicesReducer, [])
+      // FIXME Match on exact value type rather than string representation.
+      .filter(([v]) => v.toString() === condition.value.toString())[0][1]
+  );
 };
 </script>
 
