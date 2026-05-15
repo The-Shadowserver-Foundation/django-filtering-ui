@@ -96,4 +96,4 @@ GPL v3 (see `LICENSE` file)
 
 ## Copyright
 
-© 2025 The Shadowserver Foundation
+© 2026 The Shadowserver Foundation
