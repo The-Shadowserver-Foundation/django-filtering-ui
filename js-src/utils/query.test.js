@@ -90,6 +90,33 @@ describe("query structure testing", () => {
     expect(JSON.parse(JSON.stringify(obj))).toEqual(expectedObj);
   });
 
+  describe("Condition.initializeValueForLookupType", () => {
+    test("initializes value to [undefined, undefined] for date-range", () => {
+      const condition = new Condition("created", "range");
+      condition.initializeValueForLookupType("date-range");
+      expect(condition.value).toEqual([undefined, undefined]);
+    });
+
+    test("initializes value to [undefined, undefined] for partial-date-range", () => {
+      const condition = new Condition("created", "partial_range");
+      condition.initializeValueForLookupType("partial-date-range");
+      expect(condition.value).toEqual([undefined, undefined]);
+    });
+
+    test("preserves an existing array value", () => {
+      const value = ["2024-01-01", "2024-12-31"];
+      const condition = new Condition("created", "range", value);
+      condition.initializeValueForLookupType("date-range");
+      expect(condition.value).toBe(value);
+    });
+
+    test("does not alter value for non-date-range lookup types", () => {
+      const condition = new Condition("name", "icontains", "foo");
+      condition.initializeValueForLookupType("input");
+      expect(condition.value).toBe("foo");
+    });
+  });
+
   test("validates falsy values", () => {
     const conditions = [
       new Condition("occurence_count", "gte", 0),

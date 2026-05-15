@@ -186,9 +186,6 @@ describe("testing ConditionRow", () => {
   });
 
   test("date range lookup type has initialized value", async () => {
-    // FIXME See the FIXME in the ConditionRow component about initializing the condition.value.
-    //       This tests the hopefully temporary solution of initialzing the condition.value in the component,
-    //       because the `date-range` type requires a two value array.
     const [identifier, relative, value] = [
       "created",
       "range",
