@@ -2,7 +2,7 @@
 import "@/app.css";
 
 import { computed, inject, nextTick, useTemplateRef } from "vue";
-import Lozenge from "@/components/Lozenge.vue";
+import Lozenge from "@/components/Lozenge/index.vue";
 import useCsrfToken from "@/composables/useCsrfToken";
 import useQueryFilters from "@/composables/useQueryFilters";
 import { operatorToLabel } from "@/utils/lookupMapping";
