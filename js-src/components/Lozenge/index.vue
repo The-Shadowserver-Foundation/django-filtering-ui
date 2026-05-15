@@ -1,3 +1,7 @@
+<script>
+export default { name: "Lozenge" };
+</script>
+
 <script setup>
 import { computed } from "vue";
 import LozengeIdentifier from "./LozengeIdentifier.vue";
