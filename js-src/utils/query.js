@@ -25,6 +25,10 @@ export class Condition {
   toObject() {
     return [this.identifier, { lookup: this.relative, value: this.value }];
   }
+  setRelative(relative, lookupType) {
+    this.relative = relative;
+    this.initializeValueForLookupType(lookupType);
+  }
   initializeValueForLookupType(lookupType) {
     if (
       (lookupType === "date-range" || lookupType === "partial-date-range") &&

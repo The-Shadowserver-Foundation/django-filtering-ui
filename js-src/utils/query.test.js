@@ -90,6 +90,36 @@ describe("query structure testing", () => {
     expect(JSON.parse(JSON.stringify(obj))).toEqual(expectedObj);
   });
 
+  describe("Condition.setRelative", () => {
+    test("sets the relative and initializes value for a date-range type", () => {
+      const condition = new Condition("created", "icontains", "foo");
+      condition.setRelative("range", "date-range");
+      expect(condition.relative).toBe("range");
+      expect(condition.value).toEqual([undefined, undefined]);
+    });
+
+    test("sets the relative without altering value for other types", () => {
+      const condition = new Condition("name", "iexact", "foo");
+      condition.setRelative("icontains", "input");
+      expect(condition.relative).toBe("icontains");
+      expect(condition.value).toBe("foo");
+    });
+
+    test("switching from date-range to partial-date-range preserves the existing value", () => {
+      const value = ["2024-01-01", "2024-12-31"];
+      const condition = new Condition("created", "range", value);
+      condition.setRelative("partial_range", "partial-date-range");
+      expect(condition.value).toBe(value);
+    });
+
+    test("switching from partial-date-range to date-range preserves the existing value", () => {
+      const value = ["2024-01-01", null];
+      const condition = new Condition("created", "partial_range", value);
+      condition.setRelative("range", "date-range");
+      expect(condition.value).toBe(value);
+    });
+  });
+
   describe("Condition.initializeValueForLookupType", () => {
     test("initializes value to [undefined, undefined] for date-range", () => {
       const condition = new Condition("created", "range");

@@ -28,18 +28,12 @@ watch(
       !condition.relative ||
       (schemaField.value && !(condition.relative in schemaField.value.lookups))
     ) {
-      // Apply a default value to the relative property
-      condition.relative = schemaField.value.default_lookup;
-      // Reset the value
+      const defaultLookup = schemaField.value.default_lookup;
+      // Reset the value, then set the relative so the Condition can
+      // initialize value to the correct shape for the new lookup type.
       condition.value = undefined;
+      condition.setRelative(defaultLookup, schemaField.value.lookups[defaultLookup].type);
     }
-  },
-);
-watch(
-  () => condition.relative,
-  (relative) => {
-    const { type } = schemaField.value.lookups[relative];
-    condition.initializeValueForLookupType(type);
   },
 );
 
@@ -86,7 +80,8 @@ const valueOptions = computed(() => {
         :options="relativeOptions"
         :includeBlank="false"
         :disabled="!condition.identifier"
-        v-model="condition.relative"
+        :modelValue="condition.relative"
+        @update:modelValue="(v) => condition.setRelative(v, schemaField.lookups[v].type)"
       />
     </div>
 
