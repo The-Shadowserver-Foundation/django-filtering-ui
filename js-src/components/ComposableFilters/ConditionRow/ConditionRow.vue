@@ -39,7 +39,10 @@ watch(
   () => condition.relative,
   (relative) => {
     // FIXME This type of initialization needs to happen in the Condition.
-    if (schemaField.value.lookups[relative].type == "date-range") {
+    if (
+      schemaField.value.lookups[relative].type == "date-range" ||
+      schemaField.value.lookups[relative].type == "partial-date-range"
+    ) {
       if (typeof condition.value != "array") {
         condition.value = [undefined, undefined];
       }
