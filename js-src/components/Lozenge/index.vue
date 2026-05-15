@@ -19,6 +19,14 @@ const schemaField = computed(() => {
 const relativeLookupInfo = computed(() => {
   return schemaField.value.lookups[condition.relative];
 });
+const relativeLabel = computed(() => {
+  if (relativeLookupInfo.value.type === "partial-date-range") {
+    const [start, end] = condition.value;
+    if (start && !end) return "after";
+    if (!start && end) return "before";
+  }
+  return relativeLookupInfo.value.label;
+});
 </script>
 
 <template>
@@ -28,7 +36,7 @@ const relativeLookupInfo = computed(() => {
       :dataValue="condition.identifier"
     />
     <LozengeRelative
-      :label="relativeLookupInfo.label"
+      :label="relativeLabel"
       :dataValue="condition.relative"
     />
     <LozengeValue

@@ -130,7 +130,12 @@ const valueOptions = computed(() => {
         }}</label>
       </span>
 
-      <span v-else-if="valueOptions.type === 'date-range'">
+      <span
+        v-else-if="
+          valueOptions.type === 'date-range' ||
+          valueOptions.type === 'partial-date-range'
+        "
+      >
         <input type="date" v-model="condition.value[0]" />
         &#45;
         <input type="date" v-model="condition.value[1]" />

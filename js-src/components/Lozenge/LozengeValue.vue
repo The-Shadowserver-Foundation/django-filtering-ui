@@ -1,6 +1,7 @@
 <script setup>
 import LozengeChoiceValue from "./LozengeChoiceValue.vue";
 import LozengeDateRangeValue from "./LozengeDateRangeValue.vue";
+import LozengePartialDateRangeValue from "./LozengePartialDateRangeValue.vue";
 
 defineProps(["lookupType", "relativeLookupInfo", "value"]);
 </script>
@@ -14,6 +15,10 @@ defineProps(["lookupType", "relativeLookupInfo", "value"]);
     />
     <LozengeDateRangeValue
       v-else-if="lookupType === 'date-range'"
+      :value="value"
+    />
+    <LozengePartialDateRangeValue
+      v-else-if="lookupType === 'partial-date-range'"
       :value="value"
     />
     <template v-else>{{ value }}</template>
